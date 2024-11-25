@@ -1,0 +1,9 @@
+this is for sports app,this is the style guide for my app
+(appGreenLight: '#70BC2A',
+appGreenMedium: '#47981F',
+appGreenDark: '#2F5D1E',
+appBlueLight: '#52A7E8',
+appBlueMedium: '#1B66DA',
+appBlueDark: '#1351D0',
+appBlack: '#142312',
+use this colors in tailwind.config.js,use modern and clean design, use tailwindcss colors, use playful theme, made best user experience, use smooth animation or transition)
