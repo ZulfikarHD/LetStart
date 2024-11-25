@@ -6,4 +6,4 @@ appBlueLight: '#52A7E8',
 appBlueMedium: '#1B66DA',
 appBlueDark: '#1351D0',
 appBlack: '#142312',
-use this colors in tailwind.config.js,use modern design, use tailwindcss colors, use playful theme, made best user experience, use smooth animation or transition for modern), always think for the best user experience, always think for the best design, always think for the best performance, always think for the best performance, made mobile responsive and the darkmode for it.
+use this colors in tailwind.config.js,use modern design, use tailwindcss colors, use playful theme, made best user experience, use smooth animation or transition for modern, use headless ui if possible), always think for the best user experience, always think for the best design, always think for the best performance, always think for the best performance, made mobile responsive and the darkmode for it.

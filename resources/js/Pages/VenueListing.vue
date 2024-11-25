@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Search, Filter, MapPin, Star, Clock, Calendar } from 'lucide-vue-next';
@@ -115,8 +115,12 @@ const sportTypes = [
         <!-- Venue Grid -->
         <div class="mx-auto -mt-10 max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="grid gap-8 md:grid-cols-3">
-                <div v-for="venue in venues" :key="venue.id"
-                    class="group relative overflow-hidden rounded-3xl bg-white shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl dark:bg-gray-800">
+                <Link
+                    v-for="venue in venues"
+                    :key="venue.id"
+                    :href="`/venue-detail/${venue.id}`"
+                    class="group relative overflow-hidden rounded-3xl bg-white shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl dark:bg-gray-800"
+                >
                     <div class="aspect-[4/3] overflow-hidden">
                         <img :src="venue.image" :alt="venue.name"
                             class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110" />
@@ -161,7 +165,7 @@ const sportTypes = [
                             </button>
                         </div>
                     </div>
-                </div>
+                </Link>
             </div>
         </div>
     </Layout>

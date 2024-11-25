@@ -22,6 +22,13 @@ Route::get('/venue-listing', function () {
     ]);
 });
 
+Route::get('/venue-detail/{id}', function ($id) {
+    return Inertia::render('VenueDetail', [
+        'id' => $id,
+        'isAuthenticated' => Auth::check()
+    ]);
+});
+
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
