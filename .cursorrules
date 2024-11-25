@@ -7,3 +7,6 @@ appBlueMedium: '#1B66DA',
 appBlueDark: '#1351D0',
 appBlack: '#142312',
 use this colors in tailwind.config.js,use modern design, use tailwindcss colors, use playful theme, made best user experience, use smooth animation or transition for modern, use headless ui if possible), always think for the best user experience, always think for the best design, always think for the best performance, always think for the best performance, made mobile responsive and the darkmode for it.
+
+
+always use composition api in vue, dont use laravel eloquent in db query, always use indonesia for text, always use mobile responsive design using tailwind when styling, always use lucide icon for icon, always consider the best UI/UX for styling like typography and icons and color composition, always focus on performance on query, always analyzing the security of the code and advising the best practice for security for the code

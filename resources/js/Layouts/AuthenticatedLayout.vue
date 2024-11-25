@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import { Link } from '@inertiajs/vue3';
-import { Menu, X, ChevronDown, Home, Calendar, MapPin, Settings, LogOut, List, Dumbbell, HelpCircle } from 'lucide-vue-next';
+import { Menu, X, ChevronDown, Home, Calendar, MapPin, Settings, LogOut, List, Dumbbell, HelpCircle, ShoppingCart, BookOpen } from 'lucide-vue-next';
 
 const showingNavigationDropdown = ref(false);
 </script>
@@ -46,6 +46,18 @@ const showingNavigationDropdown = ref(false);
 
                     <!-- User Menu -->
                     <div class="hidden sm:ml-6 sm:flex sm:items-center">
+                        <!-- Cart -->
+                        <Link href="/cart" class="relative mr-4">
+                            <ShoppingCart class="h-6 w-6 text-gray-500 hover:text-appGreenMedium dark:text-gray-300 dark:hover:text-appGreenLight" />
+                            <span class="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-appGreenLight text-xs font-bold text-white">2</span>
+                        </Link>
+
+                        <!-- My Bookings -->
+                        <Link href="/my-bookings" class="relative mr-4">
+                            <BookOpen class="h-6 w-6 text-gray-500 hover:text-appGreenMedium dark:text-gray-300 dark:hover:text-appGreenLight" />
+                            <span class="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-appGreenLight text-xs font-bold text-white">3</span>
+                        </Link>
+
                         <div class="relative ml-3">
                             <div>
                                 <button class="flex items-center gap-2 rounded-full bg-white p-1 text-sm focus:outline-none focus:ring-2 focus:ring-appGreenLight dark:bg-gray-800">
@@ -87,6 +99,20 @@ const showingNavigationDropdown = ref(false);
                     </Link>
                     <Link href="/help" class="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
                         Bantuan
+                    </Link>
+                    <Link href="/cart" class="flex items-center justify-between border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+                        <div class="flex items-center gap-2">
+                            <ShoppingCart class="h-5 w-5" />
+                            Keranjang
+                        </div>
+                        <span class="flex h-5 w-5 items-center justify-center rounded-full bg-appGreenLight text-xs font-bold text-white">2</span>
+                    </Link>
+                    <Link href="/my-bookings" class="flex items-center justify-between border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+                        <div class="flex items-center gap-2">
+                            <BookOpen class="h-5 w-5" />
+                            Booking Saya
+                        </div>
+                        <span class="flex h-5 w-5 items-center justify-center rounded-full bg-appGreenLight text-xs font-bold text-white">3</span>
                     </Link>
                 </div>
 
@@ -170,4 +196,3 @@ const showingNavigationDropdown = ref(false);
         </footer>
     </div>
 </template>
-
