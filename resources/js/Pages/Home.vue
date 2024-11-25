@@ -1,13 +1,17 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
-import { MapPin, Star, Trophy, Timer, Shield, Search, HelpCircle, LogIn, UserPlus, List, Dumbbell } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { MapPin, Star, Trophy, Timer, Shield, Search, HelpCircle, LogIn, UserPlus, List, Dumbbell, X } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 
 const page = usePage();
 const isAuthenticated = computed(() => page.props.auth.user !== null);
+
+// Add reactive references
+const searchQuery = ref('');
+const showSuggestions = ref(false);
 
 // Mock data - replace with actual API data
 const featuredVenues = [
@@ -63,6 +67,23 @@ const promotions = [
         discount: '25%'
     }
 ];
+
+const popularSports = ['Futsal', 'Badminton', 'Basket'];
+
+const handleSearch = () => {
+    // Implement search functionality
+    if (searchQuery.value.length > 2) {
+        showSuggestions.value = true;
+        // Add your search logic here
+    } else {
+        showSuggestions.value = false;
+    }
+};
+
+const clearSearch = () => {
+    searchQuery.value = '';
+    showSuggestions.value = false;
+};
 </script>
 
 <template>
@@ -196,6 +217,85 @@ const promotions = [
                     </div>
                 </div>
             </section>
+
+            <!-- How It Works Section -->
+            <section class="py-20 bg-white dark:bg-gray-900">
+                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-16">
+                        <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Cara Booking</h2>
+                        <p class="mt-2 text-gray-600 dark:text-gray-300">Booking lapangan dalam 3 langkah mudah</p>
+                    </div>
+
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div class="relative">
+                            <div class="flex items-center justify-center w-16 h-16 mb-6 rounded-full bg-appGreenLight/10 text-appGreenLight">
+                                <Search class="h-8 w-8" />
+                            </div>
+                            <h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">1. Cari Venue</h3>
+                            <p class="text-gray-600 dark:text-gray-400">Temukan venue olahraga favoritmu dengan mudah</p>
+                            <!-- Connector Line (hidden on mobile) -->
+                            <div class="hidden md:block absolute top-8 left-full w-full h-0.5 bg-gradient-to-r from-appGreenLight to-transparent"></div>
+                        </div>
+                        <!-- Add similar blocks for steps 2 and 3 -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Mobile App Section -->
+            <section class="relative overflow-hidden bg-appGreenDark py-20">
+                <div class="absolute inset-0">
+                    <div class="absolute inset-0 bg-[url('/images/pattern-2.svg')] bg-center opacity-5"></div>
+                </div>
+                <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div class="grid items-center gap-12 lg:grid-cols-2">
+                        <div>
+                            <h2 class="text-3xl font-bold text-white md:text-4xl">Download Aplikasi SportVenue</h2>
+                            <p class="mt-4 text-lg text-gray-300">Booking lebih mudah dengan aplikasi mobile kami</p>
+                            <div class="mt-8 flex flex-wrap gap-4">
+                                <a href="#" class="transform transition-transform hover:scale-105">
+                                    <img src="/images/app-store-badge.png" alt="Download on App Store" class="h-12" />
+                                </a>
+                                <a href="#" class="transform transition-transform hover:scale-105">
+                                    <img src="/images/play-store-badge.png" alt="Get it on Google Play" class="h-12" />
+                                </a>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <img src="/images/app-preview.png" alt="SportVenue App"
+                                class="mx-auto w-full max-w-md transform transition-transform hover:scale-105" />
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Testimonials Section -->
+            <section class="py-20 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
+                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-16">
+                        <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Apa Kata Mereka?</h2>
+                        <p class="mt-2 text-gray-600 dark:text-gray-300">Testimoni dari pengguna SportVenue</p>
+                    </div>
+
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div v-for="testimonial in testimonials" :key="testimonial.id"
+                            class="relative rounded-2xl bg-white p-8 shadow-lg dark:bg-gray-800">
+                            <div class="absolute -top-4 left-8">
+                                <div class="flex h-12 w-12 items-center justify-center rounded-full bg-appGreenLight">
+                                    <img :src="testimonial.avatar" :alt="testimonial.name"
+                                        class="h-10 w-10 rounded-full object-cover" />
+                                </div>
+                            </div>
+                            <div class="pt-6">
+                                <p class="mb-4 text-gray-600 dark:text-gray-300">{{ testimonial.content }}</p>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900 dark:text-white">{{ testimonial.name }}</h4>
+                                    <p class="text-sm text-gray-500">{{ testimonial.role }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </main>
     </AuthenticatedLayout>
 
@@ -323,6 +423,56 @@ const promotions = [
                                     </button>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- How It Works Section -->
+            <section class="py-20 bg-white dark:bg-gray-900">
+                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-16">
+                        <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Cara Booking</h2>
+                        <p class="mt-2 text-gray-600 dark:text-gray-300">Booking lapangan dalam 3 langkah mudah</p>
+                    </div>
+
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div class="relative">
+                            <div class="flex items-center justify-center w-16 h-16 mb-6 rounded-full bg-appGreenLight/10 text-appGreenLight">
+                                <Search class="h-8 w-8" />
+                            </div>
+                            <h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">1. Cari Venue</h3>
+                            <p class="text-gray-600 dark:text-gray-400">Temukan venue olahraga favoritmu dengan mudah</p>
+                            <!-- Connector Line (hidden on mobile) -->
+                            <div class="hidden md:block absolute top-8 left-full w-full h-0.5 bg-gradient-to-r from-appGreenLight to-transparent"></div>
+                        </div>
+                        <!-- Add similar blocks for steps 2 and 3 -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Mobile App Section -->
+            <section class="relative overflow-hidden bg-appGreenDark py-20">
+                <div class="absolute inset-0">
+                    <div class="absolute inset-0 bg-[url('/images/pattern-2.svg')] bg-center opacity-5"></div>
+                </div>
+                <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div class="grid items-center gap-12 lg:grid-cols-2">
+                        <div>
+                            <h2 class="text-3xl font-bold text-white md:text-4xl">Download Aplikasi SportVenue</h2>
+                            <p class="mt-4 text-lg text-gray-300">Booking lebih mudah dengan aplikasi mobile kami</p>
+                            <div class="mt-8 flex flex-wrap gap-4">
+                                <a href="#" class="transform transition-transform hover:scale-105">
+                                    <img src="/images/app-store-badge.png" alt="Download on App Store" class="h-12" />
+                                </a>
+                                <a href="#" class="transform transition-transform hover:scale-105">
+                                    <img src="/images/play-store-badge.png" alt="Get it on Google Play" class="h-12" />
+                                </a>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <img src="/images/app-preview.png" alt="SportVenue App"
+                                class="mx-auto w-full max-w-md transform transition-transform hover:scale-105" />
                         </div>
                     </div>
                 </div>

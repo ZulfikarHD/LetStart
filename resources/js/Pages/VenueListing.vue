@@ -24,7 +24,7 @@ const venues = ref([
         type: 'Futsal',
         location: 'Jakarta Selatan',
         rating: 4.8,
-        price: 150000,
+        price: 'Rp 150.000/jam',
         image: '/images/venues/futsal-1.jpg',
         availableNow: true
     },
@@ -34,7 +34,7 @@ const venues = ref([
         type: 'Badminton',
         location: 'Jakarta Pusat',
         rating: 4.5,
-        price: 100000,
+        price: 'Rp 100.000/jam',
         image: '/images/venues/badminton-1.jpg',
         availableNow: false
     },
@@ -51,6 +51,27 @@ const sportTypes = [
     { id: 'basketball', name: 'Basket' },
     { id: 'tennis', name: 'Tenis' },
 ];
+
+const isLoading = ref(false);
+const isSearching = ref(false);
+const searchSuggestions = ref([]);
+const priceRange = ref('all');
+const sortBy = ref('recommended');
+
+const loadMoreVenues = async () => {
+    if (isLoading.value) return;
+    isLoading.value = true;
+    // Load more logic
+    isLoading.value = false;
+};
+
+const selectedVenue = ref(null);
+const isQuickViewOpen = ref(false);
+
+const openQuickView = (venue) => {
+    selectedVenue.value = venue;
+    isQuickViewOpen.value = true;
+};
 </script>
 
 <template>
@@ -113,60 +134,45 @@ const sportTypes = [
         </section>
 
         <!-- Venue Grid -->
-        <div class="mx-auto -mt-10 max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="grid gap-8 md:grid-cols-3">
-                <Link
-                    v-for="venue in venues"
-                    :key="venue.id"
-                    :href="`/venue-detail/${venue.id}`"
-                    class="group relative overflow-hidden rounded-3xl bg-white shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl dark:bg-gray-800"
-                >
-                    <div class="aspect-[4/3] overflow-hidden">
-                        <img :src="venue.image" :alt="venue.name"
-                            class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110" />
-                        <div class="absolute right-4 top-4 rounded-full bg-white/95 px-4 py-1 text-sm font-semibold text-appGreenDark backdrop-blur-sm dark:bg-gray-800/95 dark:text-appGreenLight">
-                            Rp {{ venue.price.toLocaleString() }}/jam
-                        </div>
-                    </div>
-
-                    <div class="p-6">
-                        <div class="mb-2 flex items-center justify-between">
-                            <h3 class="text-xl font-bold text-gray-900 dark:text-white">{{ venue.name }}</h3>
-                            <div class="flex items-center gap-1">
-                                <Star class="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                                <span class="font-medium text-gray-700 dark:text-gray-300">{{ venue.rating }}</span>
+        <section class="py-20">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Venue Tersedia</h2>
+                    <p class="mt-2 text-gray-600 dark:text-gray-300">Pilihan terbaik untuk olahraga favoritmu</p>
+                </div>
+                <div class="grid gap-8 md:grid-cols-3">
+                    <div v-for="venue in venues" :key="venue.id"
+                        class="group relative overflow-hidden rounded-3xl bg-white shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl dark:bg-gray-800">
+                        <div class="aspect-[4/3] overflow-hidden">
+                            <img :src="venue.image" :alt="venue.name"
+                                class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                            <div class="absolute right-4 top-4 rounded-full bg-white px-4 py-1 text-sm font-semibold text-appGreenDark">
+                                {{ venue.type }}
                             </div>
                         </div>
-
-                        <div class="mb-4 space-y-2">
-                            <p class="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+                        <div class="p-6">
+                            <div class="mb-2 flex items-center justify-between">
+                                <h3 class="text-xl font-bold text-gray-900 dark:text-white">{{ venue.name }}</h3>
+                                <div class="flex items-center gap-1">
+                                    <Star class="h-5 w-5 fill-yellow-400 text-yellow-400" />
+                                    <span class="font-medium text-gray-700 dark:text-gray-300">{{ venue.rating }}</span>
+                                </div>
+                            </div>
+                            <p class="mb-4 flex items-center gap-2 text-gray-600 dark:text-gray-300">
                                 <MapPin class="h-4 w-4" />
                                 {{ venue.location }}
                             </p>
-                            <p class="flex items-center gap-2 text-gray-600 dark:text-gray-300">
-                                <Calendar class="h-4 w-4" />
-                                {{ venue.type }}
-                            </p>
-                        </div>
-
-                        <div class="flex items-center justify-between">
-                            <span :class="[
-                                'flex items-center gap-2',
-                                venue.availableNow
-                                    ? 'text-appGreenLight'
-                                    : 'text-gray-500 dark:text-gray-400'
-                            ]">
-                                <Clock class="h-4 w-4" />
-                                {{ venue.availableNow ? 'Tersedia Sekarang' : 'Tidak Tersedia' }}
-                            </span>
-
-                            <button class="rounded-full bg-appGreenLight px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-appGreenMedium">
-                                Booking
-                            </button>
+                            <div class="flex items-center justify-between">
+                                <span class="text-lg font-bold text-appGreenMedium">{{ venue.price }}</span>
+                                <Link :href="`/venues/${venue.id}`"
+                                    class="rounded-full bg-appGreenLight px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-appGreenMedium">
+                                    Booking
+                                </Link>
+                            </div>
                         </div>
                     </div>
-                </Link>
+                </div>
             </div>
-        </div>
+        </section>
     </Layout>
 </template>
