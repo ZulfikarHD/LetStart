@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
     return Inertia::render('Home', [
@@ -11,6 +12,13 @@ Route::get('/', function () {
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
+        'isAuthenticated' => Auth::check()
+    ]);
+});
+
+Route::get('/venue-listing', function () {
+    return Inertia::render('VenueListing', [
+        'isAuthenticated' => Auth::check()
     ]);
 });
 
