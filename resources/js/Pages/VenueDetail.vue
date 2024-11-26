@@ -4,6 +4,8 @@ import { Head, Link } from '@inertiajs/vue3';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { MapPin, Calendar, DollarSign, Star, Info, Shield, Dumbbell, ChevronRight, X } from 'lucide-vue-next';
+import { useCartStore } from '@/Stores/cart'; // Using Pinia for state management
+import { router } from '@inertiajs/vue3';
 
 const props = defineProps({
     auth: {
@@ -108,15 +110,32 @@ const filterSport = ref(null);
 const selectedFieldId = ref(null);
 const showingFieldDetail = ref(false);
 const currentImageIndex = ref(0);
+const cartStore = useCartStore();
+const showConfirmModal = ref(false);
+const bookingData = ref(null);
 
 // Simplified selection logic
 const addToBooking = (field) => {
     if (!field.available) return;
 
+    // Create booking data structure
+    const bookingItem = {
+        id: `${field.id}-${Date.now()}`, // Unique ID
+        fieldId: field.id,
+        venueName: venue.value.name,
+        fieldName: field.name,
+        date: selectedDate.value,
+        timeSlots: [],
+        price: field.price,
+        image: field.image
+    };
+
     selectedFields.value.set(field.id, {
         field,
-        timeSlots: []
+        timeSlots: [],
+        bookingData: bookingItem
     });
+
     showBookingModal.value = true;
 };
 
@@ -149,12 +168,15 @@ const timeSlotGroups = computed(() => {
 });
 
 const book = () => {
-    // Implement booking logic
-    console.log('Booking:', {
-        fields: Array.from(selectedFields.value.values()),
-        date: selectedDate.value,
-        totalPrice: totalPrice.value
-    });
+    const bookings = Array.from(selectedFields.value.values()).map(({ bookingData, timeSlots }) => ({
+        ...bookingData,
+        timeSlots: timeSlots,
+        totalPrice: timeSlots.length * bookingData.price
+    }));
+
+    // Show confirmation modal
+    bookingData.value = bookings;
+    showConfirmModal.value = true;
 };
 
 const showNotification = (message) => {
@@ -221,6 +243,33 @@ const nextImage = () => {
 const prevImage = () => {
     if (currentImageIndex.value > 0) {
         currentImageIndex.value--;
+    }
+};
+
+// Add to cart function
+const addToCart = () => {
+    try {
+        bookingData.value.forEach(booking => {
+            cartStore.addItem(booking);
+        });
+
+        showNotification('Berhasil ditambahkan ke keranjang');
+        router.visit('/cart'); // Redirect to cart page
+    } catch (error) {
+        showNotification('Gagal menambahkan ke keranjang', 'error');
+    }
+};
+
+// Direct checkout function
+const directCheckout = () => {
+    try {
+        bookingData.value.forEach(booking => {
+            cartStore.addItem(booking);
+        });
+
+        router.visit('/checkout'); // Redirect to checkout page
+    } catch (error) {
+        showNotification('Gagal memproses checkout', 'error');
     }
 };
 </script>
@@ -570,5 +619,26 @@ const prevImage = () => {
                 {{ toastMessage }}
             </div>
         </Transition>
+
+        <!-- Add Confirmation Modal -->
+        <Dialog v-if="showConfirmModal" @close="showConfirmModal = false">
+            <div class="p-6">
+                <h3 class="text-lg font-semibold mb-4">Pilih Metode Booking</h3>
+
+                <div class="space-y-4">
+                    <button @click="addToCart"
+                        class="w-full flex items-center justify-center gap-2 p-4 rounded-xl bg-appGreenLight text-white hover:bg-appGreenMedium transition-colors">
+                        <LucideShoppingCart class="w-5 h-5" />
+                        Tambah ke Keranjang
+                    </button>
+
+                    <button @click="directCheckout"
+                        class="w-full flex items-center justify-center gap-2 p-4 rounded-xl border border-appGreenLight text-appGreenDark hover:bg-appGreenLight/10 transition-colors">
+                        <LucideCreditCard class="w-5 h-5" />
+                        Langsung Checkout
+                    </button>
+                </div>
+            </div>
+        </Dialog>
     </Layout>
 </template>

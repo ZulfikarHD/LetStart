@@ -112,7 +112,7 @@
                     </div>
                 </div>
 
-                <!-- Enhanced Empty State -->
+                <!-- Empty State -->
                 <div v-if="filteredBookings.length === 0" class="text-center py-12">
                     <div class="max-w-sm mx-auto">
                         <img src="/images/empty-bookings.svg" alt="No bookings" class="w-48 h-48 mx-auto mb-6" />
