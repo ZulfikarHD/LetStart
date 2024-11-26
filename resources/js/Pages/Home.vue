@@ -91,8 +91,8 @@ const clearSearch = () => {
 
     <AuthenticatedLayout v-if="isAuthenticated">
         <main class="min-h-screen bg-gray-50 dark:bg-gray-900">
-            <!-- Hero Section with Search -->
-            <section class="relative bg-appGreenDark py-20">
+            <!-- Hero Section -->
+            <section class="relative bg-appGreenDark pt-20 pb-32 z-10">
                 <div class="absolute inset-0 overflow-hidden">
                     <div class="absolute inset-0 bg-[url('/images/pattern-2.svg')] bg-center opacity-5"></div>
                 </div>
@@ -112,7 +112,8 @@ const clearSearch = () => {
                             <div class="flex overflow-hidden rounded-full bg-white shadow-lg">
                                 <div class="flex flex-1 items-center px-4">
                                     <Search class="h-5 w-5 text-gray-400" />
-                                    <input type="text" placeholder="Cari lapangan olahraga..."
+                                    <input type="text"
+                                        placeholder="Cari lapangan olahraga..."
                                         class="w-full border-0 px-4 py-4 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-0" />
                                 </div>
                                 <button class="bg-appGreenLight px-8 font-semibold text-white transition-colors hover:bg-appGreenMedium">
@@ -125,20 +126,20 @@ const clearSearch = () => {
             </section>
 
             <!-- Stats Section -->
-            <section class="-mt-12">
+            <section class="relative z-20">
                 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
-                        <div class="rounded-2xl bg-white p-8 shadow-lg transition-transform hover:-translate-y-1 dark:bg-gray-800">
+                    <div class="relative -mt-24 grid grid-cols-1 gap-6 md:grid-cols-3">
+                        <div class="rounded-2xl bg-white/95 backdrop-blur-sm p-8 shadow-lg transition-all duration-300 hover:-translate-y-1 dark:bg-gray-800/95 transform-gpu">
                             <Trophy class="mb-4 h-10 w-10 text-appGreenLight" />
                             <h3 class="text-2xl font-bold text-gray-900 dark:text-white">500+</h3>
                             <p class="text-gray-600 dark:text-gray-300">Venue Olahraga</p>
                         </div>
-                        <div class="rounded-2xl bg-white p-8 shadow-lg transition-transform hover:-translate-y-1 dark:bg-gray-800">
+                        <div class="rounded-2xl bg-white/95 backdrop-blur-sm p-8 shadow-lg transition-all duration-300 hover:-translate-y-1 dark:bg-gray-800/95 transform-gpu">
                             <Timer class="mb-4 h-10 w-10 text-appGreenLight" />
                             <h3 class="text-2xl font-bold text-gray-900 dark:text-white">24/7</h3>
                             <p class="text-gray-600 dark:text-gray-300">Layanan Booking</p>
                         </div>
-                        <div class="rounded-2xl bg-white p-8 shadow-lg transition-transform hover:-translate-y-1 dark:bg-gray-800">
+                        <div class="rounded-2xl bg-white/95 backdrop-blur-sm p-8 shadow-lg transition-all duration-300 hover:-translate-y-1 dark:bg-gray-800/95 transform-gpu">
                             <Shield class="mb-4 h-10 w-10 text-appGreenLight" />
                             <h3 class="text-2xl font-bold text-gray-900 dark:text-white">100%</h3>
                             <p class="text-gray-600 dark:text-gray-300">Pembayaran Aman</p>
@@ -148,7 +149,7 @@ const clearSearch = () => {
             </section>
 
             <!-- Featured Venues -->
-            <section class="py-20">
+            <section class="relative z-10 bg-gray-50 dark:bg-gray-900 pt-16">
                 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div class="mb-12">
                         <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Venue Populer</h2>
@@ -156,7 +157,7 @@ const clearSearch = () => {
                     </div>
                     <div class="grid gap-8 md:grid-cols-3">
                         <div v-for="venue in featuredVenues" :key="venue.id"
-                            class="group relative overflow-hidden rounded-3xl bg-white shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl dark:bg-gray-800">
+                            class="group relative overflow-hidden rounded-3xl bg-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-gray-800 transform-gpu">
                             <div class="aspect-[4/3] overflow-hidden">
                                 <img :src="venue.image" :alt="venue.name"
                                     class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110" />
@@ -189,7 +190,7 @@ const clearSearch = () => {
                 </div>
             </section>
 
-            <!-- Promotions -->
+            <!-- Promotions Section -->
             <section class="bg-gradient-to-b from-white to-gray-50 py-20 dark:from-gray-800 dark:to-gray-900">
                 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div class="mb-12 text-center">
@@ -267,42 +268,13 @@ const clearSearch = () => {
                     </div>
                 </div>
             </section>
-
-            <!-- Testimonials Section -->
-            <section class="py-20 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
-                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div class="text-center mb-16">
-                        <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Apa Kata Mereka?</h2>
-                        <p class="mt-2 text-gray-600 dark:text-gray-300">Testimoni dari pengguna SportVenue</p>
-                    </div>
-
-                    <div class="grid md:grid-cols-3 gap-8">
-                        <div v-for="testimonial in testimonials" :key="testimonial.id"
-                            class="relative rounded-2xl bg-white p-8 shadow-lg dark:bg-gray-800">
-                            <div class="absolute -top-4 left-8">
-                                <div class="flex h-12 w-12 items-center justify-center rounded-full bg-appGreenLight">
-                                    <img :src="testimonial.avatar" :alt="testimonial.name"
-                                        class="h-10 w-10 rounded-full object-cover" />
-                                </div>
-                            </div>
-                            <div class="pt-6">
-                                <p class="mb-4 text-gray-600 dark:text-gray-300">{{ testimonial.content }}</p>
-                                <div>
-                                    <h4 class="font-semibold text-gray-900 dark:text-white">{{ testimonial.name }}</h4>
-                                    <p class="text-sm text-gray-500">{{ testimonial.role }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
         </main>
     </AuthenticatedLayout>
 
     <GuestLayout v-else>
         <main class="min-h-screen bg-gray-50 dark:bg-gray-900">
             <!-- Hero Section with Search -->
-            <section class="relative bg-appGreenDark py-20">
+            <section class="relative bg-appGreenDark pt-20 pb-32">
                 <div class="absolute inset-0 overflow-hidden">
                     <div class="absolute inset-0 bg-[url('/images/pattern-2.svg')] bg-center opacity-5"></div>
                 </div>
@@ -335,9 +307,9 @@ const clearSearch = () => {
             </section>
 
             <!-- Stats Section -->
-            <section class="-mt-12">
+            <section class="relative z-20 bg-transparent">
                 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+                    <div class="relative -mt-24 grid grid-cols-1 gap-6 md:grid-cols-3">
                         <div class="rounded-2xl bg-white p-8 shadow-lg transition-transform hover:-translate-y-1 dark:bg-gray-800">
                             <Trophy class="mb-4 h-10 w-10 text-appGreenLight" />
                             <h3 class="text-2xl font-bold text-gray-900 dark:text-white">500+</h3>
@@ -358,7 +330,7 @@ const clearSearch = () => {
             </section>
 
             <!-- Featured Venues -->
-            <section class="py-20">
+            <section class="relative z-10 bg-gray-50 dark:bg-gray-900 pt-16">
                 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div class="mb-12">
                         <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Venue Populer</h2>

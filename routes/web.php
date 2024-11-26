@@ -22,12 +22,20 @@ Route::get('/venue-listing', function () {
     ]);
 });
 
-Route::get('/venue-detail/{id}', function ($id) {
-    return Inertia::render('VenueDetail', [
-        'id' => $id,
+Route::get('/sports-category', function () {
+    return Inertia::render('SportsCategory', [
         'isAuthenticated' => Auth::check()
     ]);
 });
+
+Route::get('/venues/{id}', function ($id) {
+    return Inertia::render('VenueDetail', [
+        'id' => $id,
+        'auth' => [
+            'user' => Auth::user()
+        ]
+    ]);
+})->name('venues.show');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');

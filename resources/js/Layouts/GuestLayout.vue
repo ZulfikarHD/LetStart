@@ -26,7 +26,7 @@ const mobileMenuOpen = ref(false);
                                 <span>List Venue</span>
                             </Link>
 
-                            <Link href="/categories" class="flex items-center gap-2 rounded-lg px-3 py-2 text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
+                            <Link href="/sports-category" class="flex items-center gap-2 rounded-lg px-3 py-2 text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
                                 <Dumbbell class="h-5 w-5" />
                                 <span>Kategori Olahraga</span>
                             </Link>
