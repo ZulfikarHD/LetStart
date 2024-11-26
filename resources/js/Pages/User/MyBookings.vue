@@ -6,80 +6,74 @@
             <div class="max-w-7xl mx-auto">
                 <!-- Header with Search -->
                 <div class="mb-8">
-                    <h1
-                        class="text-3xl font-bold text-appBlack dark:text-white"
-                    >
+                    <h1 class="text-3xl font-bold bg-gradient-to-r from-appGreenDark to-appGreenLight bg-clip-text text-transparent">
                         Pemesanan Saya
                     </h1>
-                    <p class="mt-2 text-gray-600 dark:text-gray-400">
+                    <p class="mt-2 text-gray-600 dark:text-gray-400 text-lg">
                         Kelola semua pemesanan venue olahraga Anda di sini
                     </p>
 
                     <!-- Search and Filter Section -->
-                    <div class="mt-4 flex flex-col sm:flex-row gap-4">
+                    <div class="mt-6 flex flex-col sm:flex-row gap-4">
                         <div class="relative flex-1">
-                            <LucideSearch
-                                class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400"
-                            />
+                            <LucideSearch class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                             <input
                                 type="text"
                                 v-model="searchQuery"
                                 @focus="showRecentSearches = true"
                                 placeholder="Cari pemesanan..."
-                                class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-appGreenLight"
+                                class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-appGreenLight/50 focus:border-appGreenLight transition-all duration-200 shadow-sm hover:border-appGreenLight"
                             />
-                            <!-- Recent Searches Dropdown -->
+                            <!-- Enhanced Recent Searches Dropdown -->
                             <div v-if="showRecentSearches && recentSearches.length"
-                                class="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
-                                <div class="p-2">
-                                    <div class="text-sm text-gray-500 dark:text-gray-400 mb-2">Pencarian Terakhir</div>
+                                class="absolute z-10 w-full mt-2 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 backdrop-blur-sm backdrop-filter">
+                                <div class="p-3">
+                                    <div class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Pencarian Terakhir</div>
                                     <div v-for="search in recentSearches" :key="search"
-                                        class="flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg cursor-pointer"
+                                        class="flex items-center justify-between p-2.5 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg cursor-pointer group transition-all duration-200"
                                         @click="searchQuery = search">
-                                        <span>{{ search }}</span>
-                                        <LucideClock class="h-4 w-4 text-gray-400" />
+                                        <span class="group-hover:text-appGreenLight transition-colors">{{ search }}</span>
+                                        <LucideClock class="h-4 w-4 text-gray-400 group-hover:text-appGreenLight transition-colors" />
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Date Range Picker -->
-                        <Popover class="relative">
-                            <PopoverButton
-                                class="flex items-center px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
-                            >
-                                <LucideCalendar
-                                    class="h-5 w-5 mr-2 text-gray-500"
-                                />
-                                <span>Filter Tanggal</span>
-                            </PopoverButton>
-                            <PopoverPanel
-                                class="absolute z-10 mt-2 w-screen max-w-sm px-4 sm:px-0"
-                            >
-                                <!-- Add your date picker content here -->
-                                <div
-                                    class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5"
+                        <!-- Enhanced Filter Buttons -->
+                        <div class="flex gap-3">
+                            <Popover class="relative">
+                                <PopoverButton class="flex items-center px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 hover:border-appGreenLight hover:bg-appGreenLight/5 dark:hover:bg-gray-700 transition-all duration-200">
+                                    <LucideCalendar class="h-5 w-5 mr-2 text-appGreenDark dark:text-appGreenLight" />
+                                    <span class="text-gray-700 dark:text-gray-200">Filter Tanggal</span>
+                                </PopoverButton>
+                                <PopoverPanel
+                                    class="absolute z-10 mt-2 w-screen max-w-sm px-4 sm:px-0"
                                 >
+                                    <!-- Add your date picker content here -->
                                     <div
-                                        class="relative bg-white dark:bg-gray-800 p-4"
+                                        class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5"
                                     >
-                                        <!-- Date picker implementation goes here -->
+                                        <div
+                                            class="relative bg-white dark:bg-gray-800 p-4"
+                                        >
+                                            <!-- Date picker implementation goes here -->
+                                        </div>
                                     </div>
-                                </div>
-                            </PopoverPanel>
-                        </Popover>
+                                </PopoverPanel>
+                            </Popover>
 
-                        <!-- Add sorting dropdown -->
-                        <select v-model="sortBy" class="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800">
-                            <option value="date-desc">Terbaru</option>
-                            <option value="date-asc">Terlama</option>
-                            <option value="price-desc">Harga Tertinggi</option>
-                            <option value="price-asc">Harga Terendah</option>
-                        </select>
+                            <select v-model="sortBy"
+                                class="px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 dark:bg-gray-800 hover:border-appGreenLight focus:ring-2 focus:ring-appGreenLight/50 focus:border-appGreenLight transition-all duration-200">
+                                <option value="date-desc">Terbaru</option>
+                                <option value="date-asc">Terlama</option>
+                                <option value="price-desc">Harga Tertinggi</option>
+                                <option value="price-asc">Harga Terendah</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Enhanced Tabs with Counter -->
+                <!-- Enhanced Tabs -->
                 <div class="mb-6">
                     <nav class="flex flex-wrap gap-2" aria-label="Tabs">
                         <button
@@ -87,16 +81,14 @@
                             :key="tab.name"
                             @click="currentTab = tab.id"
                             :class="[
+                                'px-5 py-2.5 rounded-xl font-medium text-sm transition-all duration-300 ease-in-out flex items-center gap-2',
                                 currentTab === tab.id
-                                    ? 'bg-appGreenLight text-white ring-2 ring-offset-2 ring-appGreenLight'
-                                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white',
-                                'px-4 py-2 rounded-lg font-medium text-sm transition duration-150 ease-in-out flex items-center gap-2',
+                                    ? 'bg-gradient-to-r from-appGreenLight to-appGreenMedium text-white shadow-md shadow-appGreenLight/20 scale-105'
+                                    : 'text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800'
                             ]"
                         >
                             {{ tab.name }}
-                            <span
-                                class="px-2 py-0.5 text-xs rounded-full bg-white/20"
-                            >
+                            <span class="px-2 py-0.5 text-xs rounded-full" :class="currentTab === tab.id ? 'bg-white/20' : 'bg-gray-200 dark:bg-gray-700'">
                                 {{ getBookingCount(tab.id) }}
                             </span>
                         </button>
@@ -137,18 +129,13 @@
                     </div>
                 </div>
 
-                <!-- Booking Cards List -->
+                <!-- Enhanced Booking Cards -->
                 <div v-else class="space-y-6">
-                    <TransitionGroup
-                        name="booking-list"
-                        appear
-                        class="space-y-6"
-                        tag="div"
-                    >
+                    <TransitionGroup name="booking-list" appear class="space-y-6" tag="div">
                         <div
                             v-for="booking in filteredBookings"
                             :key="booking.id"
-                            class="group relative bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 hover:shadow-md transition-all duration-300 ease-in-out border-l-4"
+                            class="group relative bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out border-l-4"
                             :class="getStatusBorderColor(booking.status)"
                         >
                             <!-- Countdown for upcoming bookings -->
@@ -235,13 +222,12 @@
                                 </div>
                             </div>
 
-                            <!-- Quick Actions Menu -->
-
-                            <div class="mt-4 flex justify-end">
+                            <!-- Enhanced Quick Actions Menu -->
+                            <div class="mt-4 flex justify-end space-x-3">
                                 <button
                                     v-if="booking.status === 'active'"
                                     @click="showBookingDetail(booking)"
-                                    class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 bg-appGreenLight/10 text-appGreenDark hover:bg-appGreenLight hover:text-white dark:bg-appGreenLight/20 dark:text-appGreenLight dark:hover:bg-appGreenLight dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-appGreenLight"
+                                    class="inline-flex items-center px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 bg-gradient-to-r from-appGreenLight to-appGreenMedium text-white hover:shadow-md hover:shadow-appGreenLight/20 focus:ring-2 focus:ring-offset-2 focus:ring-appGreenLight"
                                 >
                                     <LucideTicket class="h-4 w-4 mr-2" />
                                     Lihat Detail

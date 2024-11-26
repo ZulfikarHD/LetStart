@@ -22,7 +22,7 @@ Route::get('/venue-listing', function () {
     ]);
 });
 
-Route::get('/sports-category', function () {
+Route::get('/sport-category', function () {
     return Inertia::render('SportsCategory', [
         'isAuthenticated' => Auth::check()
     ]);
@@ -148,9 +148,35 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
 
-    // Profile routes
+    // Profile & Settings routes
+    Route::get('/profile', function () {
+        return Inertia::render('User/Settings/Profile', [
+            'auth' => [
+                'user' => Auth::user()
+            ]
+        ]);
+    })->name('profile.show');
+
     Route::get('/settings', function () {
-        return Inertia::render('User/Settings/Index');
+        // Get the tab from query parameter, default to 'notifications'
+        $tab = request()->query('tab', 'notifications');
+
+        // Map tab names to their components
+        $components = [
+            'notifications' => 'User/Settings/NotificationSettings',
+            'security' => 'User/Settings/SecuritySettings',
+            'payments' => 'User/Settings/PaymentSettings',
+        ];
+
+        // Get the component name based on tab, fallback to notifications
+        $component = $components[$tab] ?? $components['notifications'];
+
+        return Inertia::render($component, [
+            'auth' => [
+                'user' => Auth::user()
+            ],
+            'currentTab' => $tab
+        ]);
     })->name('settings.index');
 
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -158,18 +184,40 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    // Profile routes
+    // Profile & Settings routes
     Route::get('/profile', function () {
-        return Inertia::render('User/Settings/Profile');
+        return Inertia::render('User/Settings/Profile', [
+            'auth' => [
+                'user' => Auth::user()
+            ]
+        ]);
     })->name('profile.show');
+
+    Route::get('/settings', function () {
+        // Get the tab from query parameter, default to 'notifications'
+        $tab = request()->query('tab', 'notifications');
+
+        // Map tab names to their components
+        $components = [
+            'notifications' => 'User/Settings/NotificationSettings',
+            'security' => 'User/Settings/SecuritySettings',
+            'payments' => 'User/Settings/PaymentSettings',
+        ];
+
+        // Get the component name based on tab, fallback to notifications
+        $component = $components[$tab] ?? $components['notifications'];
+
+        return Inertia::render($component, [
+            'auth' => [
+                'user' => Auth::user()
+            ],
+            'currentTab' => $tab
+        ]);
+    })->name('settings.index');
 
     Route::get('/my-bookings', function () {
         return Inertia::render('User/MyBookings');
     })->name('bookings.index');
-
-    Route::get('/settings', function () {
-        return Inertia::render('User/Settings/Index');
-    })->name('settings.index');
 });
 
 require __DIR__.'/auth.php';

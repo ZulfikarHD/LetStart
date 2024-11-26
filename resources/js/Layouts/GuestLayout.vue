@@ -41,7 +41,7 @@ const footerLinks = {
           <div class="flex items-center gap-8">
             <Link href="/"
                   class="text-2xl font-bold text-appGreenDark transition-colors hover:text-appGreenMedium dark:text-appGreenLight">
-              SportVenue
+              MainNow
             </Link>
 
             <!-- Desktop Navigation -->
@@ -139,7 +139,7 @@ const footerLinks = {
           <div class="space-y-4">
             <Link href="/"
                   class="text-2xl font-bold text-appGreenDark dark:text-appGreenLight">
-              SportVenue
+              MainNow
             </Link>
             <p class="text-sm text-gray-600 dark:text-gray-400">
               Platform booking lapangan olahraga terpercaya dengan ribuan venue di seluruh Indonesia
@@ -186,7 +186,7 @@ const footerLinks = {
             <ul class="space-y-2">
               <li class="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                 <Mail class="h-5 w-5" />
-                <span>support@sportvenue.id</span>
+                <span>support@mainnow.id</span>
               </li>
               <li class="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                 <Phone class="h-5 w-5" />
@@ -198,7 +198,7 @@ const footerLinks = {
 
         <div class="mt-8 border-t border-gray-200 pt-8 dark:border-gray-700">
           <p class="text-center text-sm text-gray-600 dark:text-gray-400">
-            © {{ new Date().getFullYear() }} SportVenue. All rights reserved.
+            © {{ new Date().getFullYear() }} MainNow. All rights reserved.
           </p>
         </div>
       </div>

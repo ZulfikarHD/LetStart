@@ -10,7 +10,7 @@ const page = usePage();
 const navigationItems = [
   { name: 'Beranda', href: '/', icon: Home },
   { name: 'List Venue', href: '/venue-listing', icon: List },
-  { name: 'Kategori', href: '/sport-categories', icon: Dumbbell },
+  { name: 'Kategori', href: '/sport-category', icon: Dumbbell },
   { name: 'Bantuan', href: '/help', icon: HelpCircle },
 ];
 
@@ -98,7 +98,7 @@ onUnmounted(() => {
           <div class="flex items-center gap-8">
             <Link href="/"
                   class="text-2xl font-bold text-appGreenDark transition-colors hover:text-appGreenMedium dark:text-appGreenLight">
-              SportVenue
+              MainNow
             </Link>
 
             <!-- Desktop Navigation -->
@@ -294,7 +294,7 @@ onUnmounted(() => {
           <!-- Brand -->
           <div class="space-y-4">
             <Link href="/" class="text-2xl font-bold text-appGreenDark transition-colors dark:text-appGreenLight">
-              SportVenue
+              MainNow
             </Link>
             <p class="text-sm text-gray-500 dark:text-gray-400">
               Platform booking venue olahraga terpercaya di Indonesia.
