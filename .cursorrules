@@ -1,4 +1,4 @@
-im creating a sports venue booking app, this is for sports app,this is the style guide for my app
+im creating a sports venue booking app, this is for sports app, for now im focusing on creating the front end first, so fill the data with just dummy data first and for the routing just using render only, this is the style guide for my app
 (appGreenLight: '#70BC2A',
 appGreenMedium: '#47981F',
 appGreenDark: '#2F5D1E',

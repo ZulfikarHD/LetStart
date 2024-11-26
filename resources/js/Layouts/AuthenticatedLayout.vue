@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
-import { Menu, X, ChevronDown, Home, Calendar, Settings, LogOut, List, Dumbbell, HelpCircle, ShoppingCart, Bell } from 'lucide-vue-next';
+import { Menu, X, ChevronDown, Home, Calendar, Settings, LogOut, List, Dumbbell, HelpCircle, ShoppingCart, Bell, User, CreditCard, Shield } from 'lucide-vue-next';
 
 const showingNavigationDropdown = ref(false);
 const showUserMenu = ref(false);
@@ -15,9 +15,60 @@ const navigationItems = [
 ];
 
 const userMenuItems = [
-  { name: 'Booking Saya', href: '/my-bookings', icon: Calendar },
-  { name: 'Pengaturan', href: '/settings', icon: Settings },
-  { name: 'Keluar', href: '/logout', icon: LogOut, method: 'post', class: 'text-red-600 dark:text-red-400' },
+  // Quick Actions Group
+  {
+    type: 'quick-actions',
+    items: [
+      {
+        name: 'Profil Saya',
+        href: route('profile.show'),
+        icon: User,
+        description: 'Lihat dan edit profil Anda'
+      },
+      {
+        name: 'Booking Saya',
+        href: route('bookings.index'),
+        icon: Calendar,
+        description: 'Lihat booking aktif dan riwayat'
+      },
+    ]
+  },
+  // Settings Group
+  {
+    type: 'settings',
+    items: [
+      {
+        name: 'Notifikasi',
+        href: route('settings.index', { tab: 'notifications' }),
+        icon: Bell,
+        badge: '2'
+      },
+      {
+        name: 'Pembayaran',
+        href: route('settings.index', { tab: 'payments' }),
+        icon: CreditCard
+      },
+      {
+        name: 'Keamanan',
+        href: route('settings.index', { tab: 'security' }),
+        icon: Shield
+      },
+    ]
+  },
+  // Logout Group
+  {
+    type: 'actions',
+    items: [
+      {
+        name: 'Keluar',
+        href: '/logout',
+        icon: LogOut,
+        method: 'post',
+        as: 'button',
+        class: 'w-full text-left text-red-600 dark:text-red-400'
+      }
+    ]
+  }
 ];
 
 // Click outside handler for user menu
@@ -110,18 +161,85 @@ onUnmounted(() => {
                 leave-to-class="transform opacity-0 scale-95"
               >
                 <div v-show="showUserMenu"
-                     class="absolute right-0 mt-2 w-48 rounded-lg bg-white py-2 shadow-lg ring-1 ring-black ring-opacity-5 dark:bg-gray-700">
-                  <Link v-for="item in userMenuItems"
-                        :key="item.href"
-                        :href="item.href"
-                        :method="item.method"
-                        :class="[
-                          'flex items-center gap-2 px-4 py-2 text-sm transition-colors hover:bg-gray-100 dark:hover:bg-gray-600',
-                          item.class || 'text-gray-600 dark:text-gray-200'
-                        ]">
-                    <component :is="item.icon" class="h-4 w-4" />
-                    {{ item.name }}
-                  </Link>
+                     class="absolute right-0 mt-2 w-80 rounded-lg bg-white py-2 shadow-lg ring-1 ring-black ring-opacity-5 dark:bg-gray-700">
+                  <!-- User Info Header -->
+                  <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-600">
+                    <div class="flex items-center space-x-3">
+                      <img class="h-10 w-10 rounded-full object-cover"
+                           :src="page.props.auth.user.avatar || '/images/avatar-placeholder.jpg'"
+                           :alt="page.props.auth.user.name" />
+                      <div>
+                        <div class="font-medium text-gray-900 dark:text-white">{{ page.props.auth.user.name }}</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400">{{ page.props.auth.user.email }}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Menu Groups -->
+                  <div v-for="(group, index) in userMenuItems" :key="index">
+                    <!-- Quick Actions -->
+                    <div v-if="group.type === 'quick-actions'" class="px-2 py-2">
+                      <Link v-for="item in group.items"
+                            :key="item.href"
+                            :href="item.href"
+                            class="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
+                        <div class="flex-shrink-0">
+                          <component :is="item.icon"
+                                    class="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                        </div>
+                        <div class="flex-1">
+                          <div class="text-sm font-medium text-gray-900 dark:text-white">
+                            {{ item.name }}
+                          </div>
+                          <div v-if="item.description"
+                               class="text-xs text-gray-500 dark:text-gray-400">
+                            {{ item.description }}
+                          </div>
+                        </div>
+                      </Link>
+                    </div>
+
+                    <!-- Settings Group -->
+                    <div v-if="group.type === 'settings'"
+                         class="border-t border-gray-100 dark:border-gray-600 px-2 py-2">
+                      <div class="px-3 py-1 text-xs font-semibold text-gray-500 dark:text-gray-400">
+                        Pengaturan
+                      </div>
+                      <Link v-for="item in group.items"
+                            :key="item.href"
+                            :href="item.href"
+                            class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
+                        <div class="flex items-center gap-2">
+                          <component :is="item.icon"
+                                    class="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                          <span class="text-sm text-gray-700 dark:text-gray-200">
+                            {{ item.name }}
+                          </span>
+                        </div>
+                        <span v-if="item.badge"
+                              class="bg-appGreenLight text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                          {{ item.badge }}
+                        </span>
+                      </Link>
+                    </div>
+
+                    <!-- Logout -->
+                    <div v-if="group.type === 'actions'"
+                         class="border-t border-gray-100 dark:border-gray-600 px-2 py-2">
+                      <Link v-for="item in group.items"
+                            :key="item.href"
+                            :href="item.href"
+                            :method="item.method"
+                            :as="item.as"
+                            :class="[
+                              'flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors',
+                              item.class
+                            ]">
+                        <component :is="item.icon" class="h-4 w-4" />
+                        <span class="text-sm">{{ item.name }}</span>
+                      </Link>
+                    </div>
+                  </div>
                 </div>
               </transition>
             </div>

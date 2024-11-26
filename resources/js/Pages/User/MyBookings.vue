@@ -281,183 +281,168 @@
         </div>
     </AuthenticatedLayout>
 
-    <Dialog
-        :open="isDetailOpen"
-        @close="isDetailOpen = false"
-        class="relative z-50"
-    >
-        <div
-            class="fixed inset-0 bg-black/30 backdrop-blur-sm"
-            aria-hidden="true"
-        />
+    <AnimatedDialog :open="isDetailOpen" @close="isDetailOpen = false">
+        <!-- Ticket Header -->
+        <div class="relative">
+            <div class="absolute top-0 right-0">
+                <button
+                    @click="isDetailOpen = false"
+                    class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
+                >
+                    <LucideX class="h-5 w-5 text-gray-500" />
+                </button>
+            </div>
 
-        <div class="fixed inset-0 flex items-center justify-center p-4">
-            <DialogPanel
-                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 p-6 text-left align-middle shadow-xl transition-all"
+            <h3
+                class="text-lg font-semibold text-appBlack dark:text-white mb-4"
             >
-                <!-- Ticket Header -->
-                <div class="relative">
-                    <div class="absolute top-0 right-0">
-                        <button
-                            @click="isDetailOpen = false"
-                            class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
-                        >
-                            <LucideX class="h-5 w-5 text-gray-500" />
-                        </button>
-                    </div>
-
-                    <h3
-                        class="text-lg font-semibold text-appBlack dark:text-white mb-4"
-                    >
-                        Detail Pemesanan
-                    </h3>
-                </div>
-
-                <!-- Progress Tracker -->
-                <div class="mb-6 relative">
-                    <div class="flex justify-between items-center">
-                        <div v-for="(step, index) in bookingSteps" :key="step.id"
-                            class="flex flex-col items-center relative z-10">
-                            <div class="w-8 h-8 rounded-full flex items-center justify-center"
-                                :class="[
-                                    currentStep > index ? 'bg-appGreenLight' : 'bg-gray-200',
-                                    'transition-colors duration-200'
-                                ]">
-                                <component :is="step.icon" class="h-4 w-4 text-white" />
-                            </div>
-                            <div class="text-xs mt-2 text-center">{{ step.label }}</div>
-                        </div>
-                    </div>
-                    <!-- Progress Line -->
-                    <div class="absolute top-4 left-0 h-0.5 bg-gray-200 w-full -z-10">
-                        <div class="h-full bg-appGreenLight transition-all duration-500"
-                            :style="{ width: `${(currentStep - 1) * 33.33}%` }" />
-                    </div>
-                </div>
-
-                <!-- Ticket Content -->
-                <div class="space-y-4">
-                    <!-- Venue Info -->
-                    <div class="flex items-start space-x-3">
-                        <div class="p-2 bg-appGreenLight/10 rounded-lg">
-                            <LucideMapPin class="h-5 w-5 text-appGreenLight" />
-                        </div>
-                        <div>
-                            <h4
-                                class="font-medium text-appBlack dark:text-white"
-                            >
-                                {{ selectedBooking?.venue_name }}
-                            </h4>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">
-                                {{ selectedBooking?.venue_location }}
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- Date & Time -->
-                    <div class="flex items-start space-x-3">
-                        <div class="p-2 bg-appGreenLight/10 rounded-lg">
-                            <LucideCalendar
-                                class="h-5 w-5 text-appGreenLight"
-                            />
-                        </div>
-                        <div>
-                            <h4
-                                class="font-medium text-appBlack dark:text-white"
-                            >
-                                {{ formatDate(selectedBooking?.date) }}
-                            </h4>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">
-                                {{ selectedBooking?.start_time }} -
-                                {{ selectedBooking?.end_time }}
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- Booking ID -->
-                    <div class="flex items-start space-x-3">
-                        <div class="p-2 bg-appGreenLight/10 rounded-lg">
-                            <LucideTicket class="h-5 w-5 text-appGreenLight" />
-                        </div>
-                        <div>
-                            <h4
-                                class="font-medium text-appBlack dark:text-white"
-                            >
-                                ID Pemesanan
-                            </h4>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">
-                                #{{
-                                    selectedBooking?.id
-                                        .toString()
-                                        .padStart(6, "0")
-                                }}
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- Price -->
-                    <div class="flex items-start space-x-3">
-                        <div class="p-2 bg-appGreenLight/10 rounded-lg">
-                            <LucideCreditCard
-                                class="h-5 w-5 text-appGreenLight"
-                            />
-                        </div>
-                        <div>
-                            <h4
-                                class="font-medium text-appBlack dark:text-white"
-                            >
-                                Total Pembayaran
-                            </h4>
-                            <p
-                                class="text-lg font-semibold text-appGreenDark dark:text-appGreenLight"
-                            >
-                                Rp
-                                {{ formatPrice(selectedBooking?.total_price) }}
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- QR Code Section -->
-                    <div
-                        class="mt-6 flex flex-col items-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg"
-                    >
-                        <div
-                            class="w-48 h-48 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm"
-                        >
-                            <!-- Add QR Code component here -->
-                            <img
-                                :src="`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=BOOKING-${selectedBooking?.id}`"
-                                alt="QR Code"
-                                class="w-full h-full"
-                            />
-                        </div>
-                        <p
-                            class="mt-3 text-sm text-gray-600 dark:text-gray-400 text-center"
-                        >
-                            Tunjukkan QR Code ini kepada petugas venue saat
-                            check-in
-                        </p>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="mt-6 flex gap-3">
-                        <button
-                            class="flex-1 inline-flex justify-center items-center px-4 py-2 border border-transparent rounded-lg text-sm font-medium text-white bg-appGreenLight hover:bg-appGreenMedium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-appGreenLight transition-colors"
-                        >
-                            <LucideShare2 class="h-4 w-4 mr-2" />
-                            Bagikan
-                        </button>
-                        <button
-                            class="flex-1 inline-flex justify-center items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-appGreenLight transition-colors"
-                        >
-                            <LucideDownload class="h-4 w-4 mr-2" />
-                            Unduh
-                        </button>
-                    </div>
-                </div>
-            </DialogPanel>
+                Detail Pemesanan
+            </h3>
         </div>
-    </Dialog>
+
+        <!-- Progress Tracker -->
+        <div class="mb-6 relative">
+            <div class="flex justify-between items-center">
+                <div v-for="(step, index) in bookingSteps" :key="step.id"
+                    class="flex flex-col items-center relative z-10">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center"
+                        :class="[
+                            currentStep > index ? 'bg-appGreenLight' : 'bg-gray-200',
+                            'transition-colors duration-200'
+                        ]">
+                        <component :is="step.icon" class="h-4 w-4 text-white" />
+                    </div>
+                    <div class="text-xs mt-2 text-center">{{ step.label }}</div>
+                </div>
+            </div>
+            <!-- Progress Line -->
+            <div class="absolute top-4 left-0 h-0.5 bg-gray-200 w-full -z-10">
+                <div class="h-full bg-appGreenLight transition-all duration-500"
+                    :style="{ width: `${(currentStep - 1) * 33.33}%` }" />
+            </div>
+        </div>
+
+        <!-- Ticket Content -->
+        <div class="space-y-4">
+            <!-- Venue Info -->
+            <div class="flex items-start space-x-3">
+                <div class="p-2 bg-appGreenLight/10 rounded-lg">
+                    <LucideMapPin class="h-5 w-5 text-appGreenLight" />
+                </div>
+                <div>
+                    <h4
+                        class="font-medium text-appBlack dark:text-white"
+                    >
+                        {{ selectedBooking?.venue_name }}
+                    </h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                        {{ selectedBooking?.venue_location }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Date & Time -->
+            <div class="flex items-start space-x-3">
+                <div class="p-2 bg-appGreenLight/10 rounded-lg">
+                    <LucideCalendar
+                        class="h-5 w-5 text-appGreenLight"
+                    />
+                </div>
+                <div>
+                    <h4
+                        class="font-medium text-appBlack dark:text-white"
+                    >
+                        {{ formatDate(selectedBooking?.date) }}
+                    </h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                        {{ selectedBooking?.start_time }} -
+                        {{ selectedBooking?.end_time }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Booking ID -->
+            <div class="flex items-start space-x-3">
+                <div class="p-2 bg-appGreenLight/10 rounded-lg">
+                    <LucideTicket class="h-5 w-5 text-appGreenLight" />
+                </div>
+                <div>
+                    <h4
+                        class="font-medium text-appBlack dark:text-white"
+                    >
+                        ID Pemesanan
+                    </h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                        #{{
+                            selectedBooking?.id
+                                .toString()
+                                .padStart(6, "0")
+                        }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Price -->
+            <div class="flex items-start space-x-3">
+                <div class="p-2 bg-appGreenLight/10 rounded-lg">
+                    <LucideCreditCard
+                        class="h-5 w-5 text-appGreenLight"
+                    />
+                </div>
+                <div>
+                    <h4
+                        class="font-medium text-appBlack dark:text-white"
+                    >
+                        Total Pembayaran
+                    </h4>
+                    <p
+                        class="text-lg font-semibold text-appGreenDark dark:text-appGreenLight"
+                    >
+                        Rp
+                        {{ formatPrice(selectedBooking?.total_price) }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- QR Code Section -->
+            <div
+                class="mt-6 flex flex-col items-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg"
+            >
+                <div
+                    class="w-48 h-48 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm"
+                >
+                    <!-- Add QR Code component here -->
+                    <img
+                        :src="`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=BOOKING-${selectedBooking?.id}`"
+                        alt="QR Code"
+                        class="w-full h-full"
+                    />
+                </div>
+                <p
+                    class="mt-3 text-sm text-gray-600 dark:text-gray-400 text-center"
+                >
+                    Tunjukkan QR Code ini kepada petugas venue saat
+                    check-in
+                </p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="mt-6 flex gap-3">
+                <button
+                    class="flex-1 inline-flex justify-center items-center px-4 py-2 border border-transparent rounded-lg text-sm font-medium text-white bg-appGreenLight hover:bg-appGreenMedium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-appGreenLight transition-colors"
+                >
+                    <LucideShare2 class="h-4 w-4 mr-2" />
+                    Bagikan
+                </button>
+                <button
+                    class="flex-1 inline-flex justify-center items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-appGreenLight transition-colors"
+                >
+                    <LucideDownload class="h-4 w-4 mr-2" />
+                    Unduh
+                </button>
+            </div>
+        </div>
+    </AnimatedDialog>
 
     <!-- Add toast notifications -->
     <TransitionGroup
@@ -523,6 +508,7 @@ import {
     DialogPanel,
 } from "@headlessui/vue";
 import CountdownTimer from "@/Components/CountDownTimer.vue";
+import AnimatedDialog from '@/Components/AnimatedDialog.vue'
 
 const loading = ref(true);
 const currentTab = ref("active");

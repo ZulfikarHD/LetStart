@@ -149,9 +149,27 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 
     // Profile routes
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/settings', function () {
+        return Inertia::render('User/Settings/Index');
+    })->name('settings.index');
+
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+Route::middleware(['auth'])->group(function () {
+    // Profile routes
+    Route::get('/profile', function () {
+        return Inertia::render('User/Settings/Profile');
+    })->name('profile.show');
+
+    Route::get('/my-bookings', function () {
+        return Inertia::render('User/MyBookings');
+    })->name('bookings.index');
+
+    Route::get('/settings', function () {
+        return Inertia::render('User/Settings/Index');
+    })->name('settings.index');
 });
 
 require __DIR__.'/auth.php';
