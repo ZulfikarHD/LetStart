@@ -28,10 +28,73 @@ Route::get('/sport-category', function () {
     ]);
 });
 
-// Venue Detail
+// Venue routes
+Route::get('/venues', function () {
+    return Inertia::render('VenueListing', [
+        'auth' => [
+            'user' => Auth::user()
+        ]
+    ]);
+})->name('venues.index');
+
 Route::get('/venues/{id}', function ($id) {
-    return Inertia::render('VenueDetail', [
+    // Mock data for venue detail - replace with actual database query later
+    $venue = [
         'id' => $id,
+        'name' => 'GOR Sahabat Sport Center',
+        'rating' => 4.5,
+        'address' => 'Jl. Raya Sport Center No. 123, Jakarta Selatan',
+        'description' => 'Fasilitas olahraga modern dengan berbagai lapangan berkualitas tinggi. Dilengkapi dengan fasilitas pendukung lengkap untuk kenyamanan pengunjung.',
+        'images' => [
+            '/images/venues/venue-1.jpg',
+            '/images/venues/venue-2.jpg',
+            '/images/venues/venue-3.jpg'
+        ],
+        'amenities' => [
+            'Parkir Luas',
+            'Toilet Bersih',
+            'Musholla',
+            'Kantin',
+            'Ruang Ganti'
+        ],
+        'sports' => ['Badminton', 'Basket', 'Futsal'],
+        'fields' => [
+            [
+                'id' => 1,
+                'name' => 'Lapangan Badminton 1',
+                'type' => 'Badminton',
+                'image' => '/images/venues/badminton-1.jpg',
+                'price' => 100000,
+                'equipment' => ['Net', 'Lighting'],
+                'available' => true,
+                'images' => [
+                    '/images/venues/badminton-1-1.jpg',
+                    '/images/venues/badminton-1-2.jpg',
+                    '/images/venues/badminton-1-3.jpg'
+                ],
+                'description' => 'Lapangan badminton dengan lantai vinyl kualitas internasional'
+            ],
+            [
+                'id' => 2,
+                'name' => 'Lapangan Basket Indoor',
+                'type' => 'Basket',
+                'image' => '/images/venues/basket-1.jpg',
+                'price' => 150000,
+                'equipment' => ['Ring Standar', 'Lighting'],
+                'available' => true,
+                'images' => [
+                    '/images/venues/basket-1-1.jpg',
+                    '/images/venues/basket-1-2.jpg',
+                    '/images/venues/basket-1-3.jpg'
+                ],
+                'description' => 'Lapangan basket indoor dengan lantai parquette'
+            ],
+            // Add more fields as needed
+        ]
+    ];
+
+    return Inertia::render('VenueDetail', [
+        'venue' => $venue,
         'auth' => [
             'user' => Auth::user()
         ]

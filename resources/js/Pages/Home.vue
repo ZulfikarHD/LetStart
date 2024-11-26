@@ -179,7 +179,7 @@ const clearSearch = () => {
                                 </p>
                                 <div class="flex items-center justify-between">
                                     <span class="text-lg font-bold text-appGreenMedium">{{ venue.price }}</span>
-                                    <Link :href="`/venues/${venue.id}`"
+                                    <Link :href="route('venues.show', venue.id)"
                                         class="rounded-full bg-appGreenLight px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-appGreenMedium">
                                         Booking
                                     </Link>
@@ -360,7 +360,7 @@ const clearSearch = () => {
                                 </p>
                                 <div class="flex items-center justify-between">
                                     <span class="text-lg font-bold text-appGreenMedium">{{ venue.price }}</span>
-                                    <Link :href="`/venues/${venue.id}`"
+                                    <Link :href="route('venues.show', venue.id)"
                                         class="rounded-full bg-appGreenLight px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-appGreenMedium">
                                         Booking
                                     </Link>
