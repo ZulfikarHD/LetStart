@@ -28,6 +28,12 @@ Route::get('/sports-category', function () {
     ]);
 });
 
+Route::get('/my-bookings', function () {
+    return Inertia::render('User/MyBookings', [
+        'isAuthenticated' => Auth::check()
+    ]);
+});
+
 Route::get('/venues/{id}', function ($id) {
     return Inertia::render('VenueDetail', [
         'id' => $id,
