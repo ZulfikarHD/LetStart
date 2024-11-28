@@ -23,6 +23,7 @@ import {
     Info        // For quick view
 } from 'lucide-vue-next';
 import { TransitionRoot, Dialog, DialogPanel, DialogTitle } from '@headlessui/vue';
+import AnimatedDialog from '@/Components/AnimatedDialog.vue';
 
 // Add debounce utility function
 const debounce = (fn, delay) => {
@@ -285,6 +286,35 @@ const toggleFavorite = (venue, event) => {
     el.classList.add('scale-125');
     setTimeout(() => el.classList.remove('scale-125'), 200);
 };
+
+// Add or update these methods in your script section
+const toggleFacilityFilter = (facilityName) => {
+    const index = filters.value.facilities.indexOf(facilityName);
+    if (index === -1) {
+        filters.value.facilities.push(facilityName);
+    } else {
+        filters.value.facilities.splice(index, 1);
+    }
+};
+
+const resetFilters = () => {
+    filters.value = {
+        price: { min: 0, max: 1000000 },
+        rating: null,
+        facilities: [],
+        availability: 'all',
+        category_id: props.initialFilters.category_id || 'all',
+        sort: props.initialFilters.sort || 'recommended',
+        date: props.initialFilters.date || null
+    };
+};
+
+const applyFilters = () => {
+    updateUrlWithFilters();
+    showFilters.value = false;
+    // Here you would typically trigger a re-fetch of the venues
+    fetchVenues();
+};
 </script>
 
 <template>
@@ -364,7 +394,10 @@ const toggleFavorite = (venue, event) => {
                                     </option>
                                 </select>
 
-                                <button class="flex items-center gap-2 rounded-full bg-appGreenLight px-6 py-3 font-semibold text-white transition-colors hover:bg-appGreenMedium">
+                                <button
+                                    @click="showFilters = true"
+                                    class="flex items-center gap-2 rounded-full bg-appGreenLight px-6 py-3 font-semibold text-white transition-colors hover:bg-appGreenMedium"
+                                >
                                     <Filter class="h-5 w-5" />
                                     Filter
                                 </button>
@@ -518,79 +551,152 @@ const toggleFavorite = (venue, event) => {
         </section>
 
         <!-- Filter Dialog -->
-        <TransitionRoot appear :show="showFilters" as="template">
-            <Dialog as="div" @close="showFilters = false" class="relative z-50">
-                <div class="fixed inset-0 bg-black/30 backdrop-blur-sm" aria-hidden="true" />
+        <AnimatedDialog :open="showFilters" @close="showFilters = false">
+            <DialogTitle class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                Filter Pencarian Venue
+            </DialogTitle>
 
-                <div class="fixed inset-0 overflow-y-auto">
-                    <div class="flex min-h-full items-center justify-center p-4">
-                        <DialogPanel class="w-full max-w-md rounded-2xl bg-white p-6 dark:bg-gray-800">
-                            <DialogTitle class="text-lg font-medium text-gray-900 dark:text-white">
-                                Filter Pencarian
-                            </DialogTitle>
+            <!-- Price Range -->
+            <div class="mb-6">
+                <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">Range Harga</h3>
+                <div class="space-y-4">
+                    <!-- Min Price -->
+                    <div>
+                        <div class="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+                            <span>Minimum</span>
+                            <span>{{ formatPrice(filters.price.min) }}</span>
+                        </div>
+                        <input
+                            type="range"
+                            v-model="filters.price.min"
+                            :min="0"
+                            :max="1000000"
+                            step="50000"
+                            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-appGreenLight"
+                        />
+                    </div>
 
-                            <!-- Price Range -->
-                            <div class="mt-4">
-                                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Range Harga
-                                </label>
-                                <div class="mt-2 space-y-4">
-                                    <!-- Min Price -->
-                                    <div>
-                                        <div class="flex justify-between text-sm text-gray-600 dark:text-gray-400">
-                                            <span>Minimum</span>
-                                            <span>{{ formatPrice(priceRange.min) }}</span>
-                                        </div>
-                                        <input
-                                            type="range"
-                                            v-model="priceRange.min"
-                                            :min="0"
-                                            :max="1000000"
-                                            step="50000"
-                                            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-appGreenLight"
-                                        />
-                                    </div>
-
-                                    <!-- Max Price -->
-                                    <div>
-                                        <div class="flex justify-between text-sm text-gray-600 dark:text-gray-400">
-                                            <span>Maximum</span>
-                                            <span>{{ formatPrice(priceRange.max) }}</span>
-                                        </div>
-                                        <input
-                                            type="range"
-                                            v-model="priceRange.max"
-                                            :min="0"
-                                            :max="1000000"
-                                            step="50000"
-                                            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-appGreenLight"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Other filters -->
-                            <!-- ... -->
-
-                            <div class="mt-6 flex justify-end gap-3">
-                                <button
-                                    @click="showFilters = false"
-                                    class="rounded-lg px-4 py-2 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
-                                >
-                                    Batal
-                                </button>
-                                <button
-                                    @click="applyFilters"
-                                    class="rounded-lg bg-appGreenLight px-4 py-2 text-white hover:bg-appGreenMedium"
-                                >
-                                    Terapkan Filter
-                                </button>
-                            </div>
-                        </DialogPanel>
+                    <!-- Max Price -->
+                    <div>
+                        <div class="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+                            <span>Maximum</span>
+                            <span>{{ formatPrice(filters.price.max) }}</span>
+                        </div>
+                        <input
+                            type="range"
+                            v-model="filters.price.max"
+                            :min="0"
+                            :max="1000000"
+                            step="50000"
+                            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-appGreenLight"
+                        />
                     </div>
                 </div>
-            </Dialog>
-        </TransitionRoot>
+            </div>
+
+            <!-- Rating Filter -->
+            <div class="mb-6">
+                <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Rating Minimum</h3>
+                <div class="flex flex-wrap gap-2">
+                    <button
+                        v-for="rating in [4, 4.2, 4.5, 4.8]"
+                        :key="rating"
+                        @click="filters.rating = filters.rating === rating ? null : rating"
+                        :class="[
+                            'px-4 py-2 rounded-full text-sm transition-colors',
+                            filters.rating === rating
+                                ? 'bg-appGreenLight text-white'
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300'
+                        ]"
+                    >
+                        {{ rating }}+
+                        <Star v-if="filters.rating === rating" class="inline-block h-3 w-3 ml-1" />
+                    </button>
+                </div>
+            </div>
+
+            <!-- Facilities -->
+            <div class="mb-6">
+                <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Fasilitas</h3>
+                <div class="flex flex-wrap gap-2">
+                    <button
+                        v-for="facility in facilities"
+                        :key="facility.id"
+                        @click="toggleFacilityFilter(facility.name)"
+                        :class="[
+                            'px-4 py-2 rounded-full text-sm transition-colors',
+                            filters.facilities.includes(facility.name)
+                                ? 'bg-appGreenLight text-white'
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300'
+                        ]"
+                    >
+                        {{ facility.name }}
+                    </button>
+                </div>
+            </div>
+
+            <!-- Availability -->
+            <div class="mb-6">
+                <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Ketersediaan</h3>
+                <div class="flex gap-3">
+                    <button
+                        v-for="option in ['all', 'available']"
+                        :key="option"
+                        @click="filters.availability = option"
+                        :class="[
+                            'px-4 py-2 rounded-full text-sm transition-colors flex items-center gap-2',
+                            filters.availability === option
+                                ? 'bg-appGreenLight text-white'
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300'
+                        ]"
+                    >
+                        <Clock v-if="option === 'available'" class="h-4 w-4" />
+                        {{ option === 'all' ? 'Semua' : 'Tersedia Sekarang' }}
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sort By -->
+            <div class="mb-6">
+                <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Urutkan Berdasarkan</h3>
+                <select
+                    v-model="filters.sort"
+                    class="w-full rounded-lg border-gray-300 text-sm focus:border-appGreenLight focus:ring-appGreenLight dark:bg-gray-700 dark:border-gray-600"
+                >
+                    <option value="recommended">Rekomendasi</option>
+                    <option value="price_low">Harga Terendah</option>
+                    <option value="price_high">Harga Tertinggi</option>
+                    <option value="rating">Rating Tertinggi</option>
+                    <option value="distance">Terdekat</option>
+                </select>
+            </div>
+
+            <!-- Date Filter -->
+            <div class="mb-6">
+                <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Tanggal Booking</h3>
+                <input
+                    type="date"
+                    v-model="filters.date"
+                    class="w-full rounded-lg border-gray-300 text-sm focus:border-appGreenLight focus:ring-appGreenLight dark:bg-gray-700 dark:border-gray-600"
+                />
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex justify-end gap-3 mt-8">
+                <button
+                    @click="resetFilters"
+                    class="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors dark:text-gray-400 dark:hover:bg-gray-700"
+                >
+                    Reset
+                </button>
+                <button
+                    @click="applyFilters"
+                    class="px-6 py-2 bg-appGreenLight text-white rounded-lg hover:bg-appGreenMedium transition-colors text-sm font-medium"
+                >
+                    Terapkan Filter
+                </button>
+            </div>
+        </AnimatedDialog>
 
         <!-- Empty state when no venues found -->
         <div v-if="venues.length === 0" class="flex flex-col items-center justify-center py-12">
