@@ -2,6 +2,7 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import { Menu, X, ChevronDown, Home, Calendar, Settings, LogOut, List, Dumbbell, HelpCircle, ShoppingCart, Bell, User, CreditCard, Shield } from 'lucide-vue-next';
+import Footer from '@/Layouts/Footer/Index.vue';
 
 const showingNavigationDropdown = ref(false);
 const showUserMenu = ref(false);
@@ -287,54 +288,7 @@ onUnmounted(() => {
       <slot />
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-white border-t border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-      <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 gap-8 md:grid-cols-4">
-          <!-- Brand -->
-          <div class="space-y-4">
-            <Link href="/" class="text-2xl font-bold text-appGreenDark transition-colors dark:text-appGreenLight">
-              MainNow
-            </Link>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
-              Platform booking venue olahraga terpercaya di Indonesia.
-            </p>
-          </div>
-
-          <!-- Links -->
-          <div>
-            <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-400">Layanan</h3>
-            <div class="mt-4 space-y-2">
-              <Link href="/venue-listing" class="block text-sm text-gray-600 hover:text-appGreenMedium dark:text-gray-300 dark:hover:text-appGreenLight">List Venue</Link>
-              <Link href="/categories" class="block text-sm text-gray-600 hover:text-appGreenMedium dark:text-gray-300 dark:hover:text-appGreenLight">Kategori Olahraga</Link>
-              <Link href="/bookings" class="block text-sm text-gray-600 hover:text-appGreenMedium dark:text-gray-300 dark:hover:text-appGreenLight">Booking</Link>
-            </div>
-          </div>
-
-          <div>
-            <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-400">Perusahaan</h3>
-            <div class="mt-4 space-y-2">
-              <Link href="/about" class="block text-sm text-gray-600 hover:text-appGreenMedium dark:text-gray-300 dark:hover:text-appGreenLight">Tentang Kami</Link>
-              <Link href="/contact" class="block text-sm text-gray-600 hover:text-appGreenMedium dark:text-gray-300 dark:hover:text-appGreenLight">Hubungi Kami</Link>
-              <Link href="/help" class="block text-sm text-gray-600 hover:text-appGreenMedium dark:text-gray-300 dark:hover:text-appGreenLight">Bantuan</Link>
-            </div>
-          </div>
-
-          <div>
-            <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-400">Legal</h3>
-            <div class="mt-4 space-y-2">
-              <Link href="/privacy" class="block text-sm text-gray-600 hover:text-appGreenMedium dark:text-gray-300 dark:hover:text-appGreenLight">Privasi</Link>
-              <Link href="/terms" class="block text-sm text-gray-600 hover:text-appGreenMedium dark:text-gray-300 dark:hover:text-appGreenLight">Syarat & Ketentuan</Link>
-            </div>
-          </div>
-        </div>
-
-        <div class="mt-8 border-t border-gray-200 pt-8 dark:border-gray-700">
-          <p class="text-center text-sm text-gray-400">
-            © {{ new Date().getFullYear() }} Sports Venue. All rights reserved.
-          </p>
-        </div>
-      </div>
-    </footer>
+    <!-- Replace footer with new component -->
+    <Footer />
   </div>
 </template>

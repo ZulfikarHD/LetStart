@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import { Menu, X, List, Dumbbell, HelpCircle, LogIn, UserPlus, Facebook, Instagram, Twitter, Mail, Phone } from 'lucide-vue-next';
+import Footer from '@/Layouts/Footer/Index.vue';
 
 const showingNavigationDropdown = ref(false);
 
@@ -10,25 +11,6 @@ const navigationItems = [
   { name: 'Kategori Olahraga', href: '/sport-category', icon: Dumbbell },
   { name: 'Bantuan', href: '/help', icon: HelpCircle },
 ];
-
-const footerLinks = {
-  quickLinks: [
-    { name: 'Tentang Kami', href: '/about' },
-    { name: 'List Venue', href: '/venue-listing' },
-    { name: 'Kategori Olahraga', href: '/sport-category' },
-    { name: 'Bantuan', href: '/help' },
-  ],
-  support: [
-    { name: 'FAQ', href: '/faq' },
-    { name: 'Kebijakan Privasi', href: '/privacy-policy' },
-    { name: 'Syarat & Ketentuan', href: '/terms' },
-  ],
-  social: [
-    { name: 'Facebook', href: '#', icon: Facebook },
-    { name: 'Instagram', href: '#', icon: Instagram },
-    { name: 'Twitter', href: '#', icon: Twitter },
-  ]
-};
 </script>
 
 <template>
@@ -131,77 +113,7 @@ const footerLinks = {
       <slot />
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-white border-t border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-      <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 gap-8 md:grid-cols-4">
-          <!-- Brand Section -->
-          <div class="space-y-4">
-            <Link href="/"
-                  class="text-2xl font-bold text-appGreenDark dark:text-appGreenLight">
-              MainNow
-            </Link>
-            <p class="text-sm text-gray-600 dark:text-gray-400">
-              Platform booking lapangan olahraga terpercaya dengan ribuan venue di seluruh Indonesia
-            </p>
-            <div class="flex space-x-4">
-              <a v-for="item in footerLinks.social"
-                 :key="item.name"
-                 :href="item.href"
-                 class="text-gray-500 transition-colors hover:text-appGreenLight dark:text-gray-400 dark:hover:text-appGreenLight">
-                <component :is="item.icon" class="h-5 w-5" />
-              </a>
-            </div>
-          </div>
-
-          <!-- Quick Links -->
-          <div>
-            <h3 class="mb-4 text-sm font-semibold uppercase text-gray-900 dark:text-white">Quick Links</h3>
-            <ul class="space-y-2">
-              <li v-for="link in footerLinks.quickLinks" :key="link.href">
-                <Link :href="link.href"
-                      class="text-gray-600 transition-colors hover:text-appGreenLight dark:text-gray-400">
-                  {{ link.name }}
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <!-- Support -->
-          <div>
-            <h3 class="mb-4 text-sm font-semibold uppercase text-gray-900 dark:text-white">Support</h3>
-            <ul class="space-y-2">
-              <li v-for="link in footerLinks.support" :key="link.href">
-                <Link :href="link.href"
-                      class="text-gray-600 transition-colors hover:text-appGreenLight dark:text-gray-400">
-                  {{ link.name }}
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <!-- Contact -->
-          <div>
-            <h3 class="mb-4 text-sm font-semibold uppercase text-gray-900 dark:text-white">Kontak</h3>
-            <ul class="space-y-2">
-              <li class="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                <Mail class="h-5 w-5" />
-                <span>support@mainnow.id</span>
-              </li>
-              <li class="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                <Phone class="h-5 w-5" />
-                <span>+62 821-2345-6789</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="mt-8 border-t border-gray-200 pt-8 dark:border-gray-700">
-          <p class="text-center text-sm text-gray-600 dark:text-gray-400">
-            © {{ new Date().getFullYear() }} MainNow. All rights reserved.
-          </p>
-        </div>
-      </div>
-    </footer>
+    <!-- Replace footer with new component -->
+    <Footer />
   </div>
 </template>
