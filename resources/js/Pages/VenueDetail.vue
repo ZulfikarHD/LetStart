@@ -18,6 +18,7 @@ import {
     X
 } from 'lucide-vue-next';
 import { useCartStore } from '@/Stores/cart'; // Using Pinia for state management
+import AnimatedDialog from '@/Components/AnimatedDialog.vue';
 
 const props = defineProps({
     auth: {
@@ -33,89 +34,6 @@ const props = defineProps({
 // Compute which layout to use based on auth status
 const Layout = computed(() => {
     return props.auth?.user ? AuthenticatedLayout : GuestLayout;
-});
-
-// Mock data - replace with actual API data
-const venue = ref({
-    name: 'GOR Sahabat Sport Center',
-    rating: 4.5,
-    address: 'Jl. Raya Sport Center No. 123, Jakarta Selatan',
-    description: 'Fasilitas olahraga modern dengan berbagai lapangan berkualitas tinggi. Dilengkapi dengan fasilitas pendukung lengkap untuk kenyamanan pengunjung.',
-    images: [
-        '/images/venue1.jpg',
-        '/images/venue2.jpg',
-        '/images/venue3.jpg'
-    ],
-    amenities: [
-        'Parkir Luas',
-        'Toilet Bersih',
-        'Musholla',
-        'Kantin',
-        'Ruang Ganti'
-    ],
-    sports: ['Badminton', 'Basket', 'Futsal'],
-    fields: [
-        {
-            id: 1,
-            name: 'Lapangan Badminton 1',
-            type: 'Badminton',
-            image: '/images/badminton1.jpg',
-            price: 100000,
-            equipment: ['Net', 'Lighting'],
-            available: true,
-            images: [
-                '/images/badminton1-1.jpg',
-                '/images/badminton1-2.jpg',
-                '/images/badminton1-3.jpg'
-            ],
-            description: 'Lapangan badminton dengan lantai vinyl kualitas internasional'
-        },
-        {
-            id: 2,
-            name: 'Lapangan Badminton 1',
-            type: 'Badminton',
-            image: '/images/badminton1.jpg',
-            price: 100000,
-            equipment: ['Net', 'Lighting'],
-            available: true,
-            images: [
-                '/images/badminton1-1.jpg',
-                '/images/badminton1-2.jpg',
-                '/images/badminton1-3.jpg'
-            ],
-            description: 'Lapangan badminton dengan lantai vinyl kualitas internasional'
-        },
-        {
-            id: 3,
-            name: 'Lapangan Badminton 1',
-            type: 'Badminton',
-            image: '/images/badminton1.jpg',
-            price: 100000,
-            equipment: ['Net', 'Lighting'],
-            available: true,
-            images: [
-                '/images/badminton1-1.jpg',
-                '/images/badminton1-2.jpg',
-                '/images/badminton1-3.jpg'
-            ],
-            description: 'Lapangan badminton dengan lantai vinyl kualitas internasional'
-        },
-        {
-            id: 4,
-            name: 'Lapangan Basket Indoor',
-            type: 'Basket',
-            image: '/images/basket1.jpg',
-            price: 150000,
-            equipment: ['Ring Standar', 'Lighting'],
-            available: false,
-            images: [
-                '/images/basket1-1.jpg',
-                '/images/basket1-2.jpg',
-                '/images/basket1-3.jpg'
-            ],
-            description: 'Lapangan basket indoor dengan lantai parquette'
-        }
-    ]
 });
 
 const showBookingModal = ref(false);
@@ -145,13 +63,13 @@ const showNotification = (message, duration = 3000) => {
 
 // Simplified selection logic
 const addToBooking = (field) => {
-    if (!field.available) return;
+    if (!field || !field.available) return;
 
     // Create booking data structure
     const bookingItem = {
         id: `${field.id}-${Date.now()}`, // Unique ID
         fieldId: field.id,
-        venueName: venue.value.name,
+        venueName: props.venue.name,
         fieldName: field.name,
         date: selectedDate.value,
         timeSlots: [],
@@ -159,6 +77,10 @@ const addToBooking = (field) => {
         image: field.image
     };
 
+    // Clear existing selection for this field if it exists
+    selectedFields.value.delete(field.id);
+
+    // Add new selection
     selectedFields.value.set(field.id, {
         field,
         timeSlots: [],
@@ -166,6 +88,7 @@ const addToBooking = (field) => {
     });
 
     showBookingModal.value = true;
+    closeFieldDetail(); // Close the field detail modal
 };
 
 // Step management
@@ -215,8 +138,8 @@ const scrollToBooking = () => {
 };
 
 const filteredFields = computed(() => {
-    if (!filterSport.value) return venue.value.fields;
-    return venue.value.fields.filter(field => field.type === filterSport.value);
+    if (!filterSport.value) return props.venue.fields;
+    return props.venue.fields.filter(field => field.type === filterSport.value);
 });
 
 // Remove if it exists
@@ -243,6 +166,9 @@ const selectTimeSlot = (fieldId, slot) => {
 };
 
 const showFieldDetail = (field) => {
+    const selectedField = props.venue.fields.find(f => f.id === field.id);
+    if (!selectedField) return;
+
     selectedFieldId.value = field.id;
     currentImageIndex.value = 0;
     showingFieldDetail.value = true;
@@ -255,8 +181,7 @@ const closeFieldDetail = () => {
 };
 
 const nextImage = () => {
-    const field = selectedFields.value.get(selectedFieldId.value)?.field;
-    if (field && currentImageIndex.value < field.images.length - 1) {
+    if (selectedField.value && currentImageIndex.value < selectedField.value.images.length - 1) {
         currentImageIndex.value++;
     }
 };
@@ -293,6 +218,11 @@ const directCheckout = () => {
         showNotification('Gagal memproses checkout', 'error');
     }
 };
+
+// Add this computed property
+const selectedField = computed(() => {
+    return props.venue.fields.find(f => f.id === selectedFieldId.value);
+});
 </script>
 
 <template>
@@ -541,88 +471,138 @@ const directCheckout = () => {
         </div>
 
         <!-- Field Detail Modal -->
-        <Transition
-            enter-active-class="transition duration-300 ease-out"
-            enter-from-class="opacity-0"
-            enter-to-class="opacity-100"
-            leave-active-class="transition duration-200 ease-in"
-            leave-from-class="opacity-100"
-            leave-to-class="opacity-0"
+        <AnimatedDialog
+            :open="showingFieldDetail"
+            @close="closeFieldDetail"
+            size="lg"
+            panel-class="sm:max-w-3xl"
         >
-            <div v-if="showingFieldDetail"
-                class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4"
-                @click.self="closeFieldDetail">
-                <div class="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-3xl bg-white p-6 dark:bg-gray-800">
-                    <div class="mb-4 flex items-center justify-between">
-                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white">
-                            {{ selectedFields.get(selectedFieldId)?.field.name }}
-                        </h3>
-                        <button @click="closeFieldDetail"
-                            class="rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-700">
-                            <X class="h-6 w-6 text-gray-500 dark:text-gray-400" />
-                        </button>
-                    </div>
+            <div class="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                {{ selectedField?.type }} / {{ selectedField?.name }}
+            </div>
 
-                    <!-- Image Gallery -->
-                    <div class="relative mb-6 aspect-[16/9] overflow-hidden rounded-2xl">
+            <div class="mb-4 flex items-center justify-between">
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">
+                        {{ selectedField?.name }}
+                    </h3>
+                    <span :class="[
+                        'mt-1 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
+                        selectedField?.available
+                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                            : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+                    ]">
+                        {{ selectedField?.available ? 'Tersedia' : 'Tidak Tersedia' }}
+                    </span>
+                </div>
+                <button @click="closeFieldDetail"
+                    class="rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <X class="h-6 w-6 text-gray-500 dark:text-gray-400" />
+                </button>
+            </div>
+
+            <div class="mb-6">
+                <div class="relative aspect-[16/9] overflow-hidden rounded-2xl">
+                    <img
+                        :src="selectedField?.images[currentImageIndex]"
+                        :alt="selectedField?.name"
+                        class="h-full w-full object-cover transition-opacity duration-300"
+                    />
+                    <button @click.stop="prevImage"
+                        :class="['absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-black/30 p-2 text-white backdrop-blur-sm transition-colors hover:bg-black/50',
+                        { 'opacity-50 cursor-not-allowed': currentImageIndex === 0 }]">
+                        <ChevronRight class="h-6 w-6 rotate-180" />
+                    </button>
+                    <button @click.stop="nextImage"
+                        :class="['absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-black/30 p-2 text-white backdrop-blur-sm transition-colors hover:bg-black/50',
+                        { 'opacity-50 cursor-not-allowed': currentImageIndex === (selectedField?.images.length - 1) }]">
+                        <ChevronRight class="h-6 w-6" />
+                    </button>
+                    <div class="absolute bottom-4 right-4 rounded-full bg-black/30 px-3 py-1 text-sm text-white backdrop-blur-sm">
+                        {{ currentImageIndex + 1 }}/{{ selectedField?.images.length }}
+                    </div>
+                </div>
+
+                <div class="mt-4 flex gap-2 overflow-x-auto pb-2">
+                    <button
+                        v-for="(image, index) in selectedField?.images"
+                        :key="index"
+                        @click="currentImageIndex = index"
+                        class="relative h-16 w-24 flex-shrink-0 overflow-hidden rounded-lg"
+                        :class="currentImageIndex === index ? 'ring-2 ring-appGreenLight' : ''"
+                    >
                         <img
-                            :src="selectedFields.get(selectedFieldId)?.field.images[currentImageIndex]"
-                            :alt="selectedFields.get(selectedFieldId)?.field.name"
+                            :src="image"
+                            :alt="`${selectedField?.name} - ${index + 1}`"
                             class="h-full w-full object-cover"
                         />
+                    </button>
+                </div>
+            </div>
 
-                        <!-- Navigation Buttons -->
-                        <button @click.stop="prevImage"
-                            :class="['absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-black/30 p-2 text-white backdrop-blur-sm transition-colors hover:bg-black/50',
-                            { 'opacity-50 cursor-not-allowed': currentImageIndex === 0 }]">
-                            <ChevronRight class="h-6 w-6 rotate-180" />
-                        </button>
-                        <button @click.stop="nextImage"
-                            :class="['absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-black/30 p-2 text-white backdrop-blur-sm transition-colors hover:bg-black/50',
-                            { 'opacity-50 cursor-not-allowed': currentImageIndex === (selectedFields.get(selectedFieldId)?.field.images.length - 1) }]">
-                            <ChevronRight class="h-6 w-6" />
-                        </button>
+            <div class="mb-6 grid gap-6 sm:grid-cols-2">
+                <div>
+                    <h4 class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Deskripsi
+                    </h4>
+                    <p class="text-gray-600 dark:text-gray-400">
+                        {{ selectedField?.description }}
+                    </p>
+                </div>
 
-                        <!-- Image Counter -->
-                        <div class="absolute bottom-4 right-4 rounded-full bg-black/30 px-3 py-1 text-sm text-white backdrop-blur-sm">
-                            {{ currentImageIndex + 1 }}/{{ selectedFields.get(selectedFieldId)?.field.images.length }}
-                        </div>
-                    </div>
-
-                    <div class="mb-6 space-y-4">
-                        <p class="text-gray-600 dark:text-gray-400">
-                            {{ selectedFields.get(selectedFieldId)?.field.description }}
-                        </p>
-
-                        <div class="flex flex-wrap gap-4">
-                            <div class="flex items-center gap-2">
-                                <Shield class="h-5 w-5 text-gray-400" />
-                                <span class="text-gray-600 dark:text-gray-400">
-                                    {{ selectedFields.get(selectedFieldId)?.field.equipment.join(', ') }}
-                                </span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <DollarSign class="h-5 w-5 text-gray-400" />
-                                <span class="font-medium text-appGreenDark dark:text-appGreenLight">
-                                    Rp {{ selectedFields.get(selectedFieldId)?.field.price.toLocaleString() }}/jam
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex gap-2">
-                        <button @click="closeFieldDetail"
-                            class="flex-1 rounded-xl bg-gray-100 px-6 py-3 font-semibold text-gray-700 transition-colors hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
-                            Tutup
-                        </button>
-                        <button @click="addToBooking(selectedFields.get(selectedFieldId)?.field); closeFieldDetail()"
-                            class="flex-1 rounded-xl bg-appGreenLight px-6 py-3 font-semibold text-white transition-colors hover:bg-appGreenMedium">
-                            Pilih Lapangan
-                        </button>
+                <div>
+                    <h4 class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Fasilitas
+                    </h4>
+                    <div class="flex flex-wrap gap-2">
+                        <span
+                            v-for="equipment in selectedField?.equipment"
+                            :key="equipment"
+                            class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700 dark:bg-gray-800 dark:text-gray-300"
+                        >
+                            <Shield class="h-4 w-4" />
+                            {{ equipment }}
+                        </span>
                     </div>
                 </div>
             </div>
-        </Transition>
+
+            <div class="mb-6 rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white">
+                            Harga Sewa
+                        </h4>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                            Per jam penggunaan
+                        </p>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-2xl font-bold text-appGreenDark dark:text-appGreenLight">
+                            Rp {{ selectedField?.price.toLocaleString() }}
+                        </div>
+                        <span class="text-sm text-gray-500">/jam</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-2">
+                <button @click="closeFieldDetail"
+                    class="flex-1 rounded-xl border border-gray-200 bg-white px-6 py-3 font-semibold text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+                    Kembali
+                </button>
+                <button
+                    @click="addToBooking(selectedField)"
+                    :disabled="!selectedField?.available"
+                    class="flex-1 items-center justify-center gap-2 rounded-xl bg-appGreenLight px-6 py-3 font-semibold text-white transition-all hover:bg-appGreenMedium disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                    <span class="flex items-center gap-2">
+                        <Calendar class="h-5 w-5" />
+                        Pilih Lapangan
+                    </span>
+                </button>
+            </div>
+        </AnimatedDialog>
 
         <!-- Toast Notification -->
         <Transition
@@ -642,29 +622,33 @@ const directCheckout = () => {
         </Transition>
 
         <!-- Update Dialog usage -->
-        <Dialog
-            v-if="showConfirmModal"
+        <AnimatedDialog
+            :open="showConfirmModal"
             @close="showConfirmModal = false"
-            class="relative z-50"
         >
-            <div class="fixed inset-0 bg-black/30" aria-hidden="true" />
-            <div class="fixed inset-0 flex items-center justify-center p-4">
-                <DialogPanel class="w-full max-w-md rounded-2xl bg-white p-6 dark:bg-gray-800">
-                    <div class="space-y-4">
-                        <button @click="addToCart"
-                            class="w-full flex items-center justify-center gap-2 p-4 rounded-xl bg-appGreenLight text-white hover:bg-appGreenMedium transition-colors">
-                            <ShoppingCart class="w-5 h-5" />
-                            Tambah ke Keranjang
-                        </button>
-
-                        <button @click="directCheckout"
-                            class="w-full flex items-center justify-center gap-2 p-4 rounded-xl border border-appGreenLight text-appGreenDark hover:bg-appGreenLight/10 transition-colors">
-                            <CreditCard class="w-5 h-5" />
-                            Langsung Checkout
-                        </button>
-                    </div>
-                </DialogPanel>
+            <div class="mb-4 flex items-center justify-between">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                    Konfirmasi Booking
+                </h3>
+                <button @click="showConfirmModal = false"
+                    class="rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <X class="h-5 w-5 text-gray-500" />
+                </button>
             </div>
-        </Dialog>
+
+            <div class="space-y-4">
+                <button @click="addToCart"
+                    class="flex w-full items-center justify-center gap-2 rounded-xl bg-appGreenLight p-4 text-white transition-colors hover:bg-appGreenMedium">
+                    <ShoppingCart class="h-5 w-5" />
+                    Tambah ke Keranjang
+                </button>
+
+                <button @click="directCheckout"
+                    class="flex w-full items-center justify-center gap-2 rounded-xl border border-appGreenLight p-4 text-appGreenDark transition-colors hover:bg-appGreenLight/10">
+                    <CreditCard class="h-5 w-5" />
+                    Langsung Checkout
+                </button>
+            </div>
+        </AnimatedDialog>
     </Layout>
 </template>
