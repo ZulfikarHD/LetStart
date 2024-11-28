@@ -15,7 +15,12 @@ import {
     BadgePlus,     // For Badminton
     CircleDot,     // For general ball sports
     Trophy,        // For competitive sports
-    Activity       // For general activity
+    Activity,      // For general activity
+    Map,        // For map view toggle
+    LayoutGrid, // For grid view toggle
+    Heart,      // For favorites
+    Share2,     // For sharing
+    Info        // For quick view
 } from 'lucide-vue-next';
 import { TransitionRoot, Dialog, DialogPanel, DialogTitle } from '@headlessui/vue';
 
@@ -176,7 +181,8 @@ const loadMoreVenues = async () => {
 const selectedVenue = ref(null);
 const isQuickViewOpen = ref(false);
 
-const openQuickView = (venue) => {
+const openQuickView = (venue, event) => {
+    event.stopPropagation();
     selectedVenue.value = venue;
     isQuickViewOpen.value = true;
 };
@@ -263,6 +269,21 @@ const fetchVenues = async () => {
         isLoading.value = false;
         isInitialLoading.value = false;
     }
+};
+
+// Add view mode state
+const viewMode = ref('grid'); // 'grid' or 'map'
+const mapCenter = ref([106.8456, -6.2088]); // Jakarta coordinates
+const mapZoom = ref(12);
+
+// Add favorite functionality
+const toggleFavorite = (venue, event) => {
+    event.stopPropagation();
+    venue.isFavorite = !venue.isFavorite;
+    // Add animation class
+    const el = document.getElementById(`fav-${venue.id}`);
+    el.classList.add('scale-125');
+    setTimeout(() => el.classList.remove('scale-125'), 200);
 };
 </script>
 
@@ -384,26 +405,71 @@ const fetchVenues = async () => {
             </div>
         </section>
 
-        <!-- Venue Grid - Update the section styling -->
-        <section class="relative z-10 bg-gray-50 dark:bg-gray-900 pt-8">
+        <!-- View Mode Toggle -->
+        <div class="fixed right-4 bottom-4 z-30">
+            <button @click="viewMode = viewMode === 'grid' ? 'map' : 'grid'"
+                class="flex items-center gap-2 rounded-full bg-white px-4 py-2 shadow-lg hover:bg-gray-50 transition-colors dark:bg-gray-800 dark:hover:bg-gray-700"
+            >
+                <component :is="viewMode === 'grid' ? Map : LayoutGrid" class="h-5 w-5" />
+                <span class="text-sm font-medium">
+                    {{ viewMode === 'grid' ? 'Lihat Peta' : 'Lihat Grid' }}
+                </span>
+            </button>
+        </div>
+
+        <!-- Grid View -->
+        <section v-if="viewMode === 'grid'" class="relative z-10 bg-gray-50 dark:bg-gray-900 pt-8">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="mb-12">
                     <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Venue Tersedia</h2>
                     <p class="mt-2 text-gray-600 dark:text-gray-300">Pilihan terbaik untuk olahraga favoritmu</p>
                 </div>
-                <div class="grid gap-8 md:grid-cols-3">
+                <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                     <div v-for="venue in venues" :key="venue.id"
-                        @click="navigateToVenue(venue.id)"
                         class="group relative overflow-hidden rounded-3xl bg-white shadow-lg dark:bg-gray-800
                                transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl">
-
-                        <div class="aspect-[4/3] overflow-hidden">
+                        <!-- Image Section with Overlay -->
+                        <div class="relative aspect-[4/3] overflow-hidden">
                             <img :src="venue.image" :alt="venue.name"
                                 class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110" />
-                            <div class="absolute right-4 top-4 rounded-full bg-white px-4 py-1 text-sm font-semibold text-appGreenDark">
+
+                            <!-- Action Overlay -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent
+                                      opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <div class="absolute bottom-3 left-3 right-3 flex justify-between items-center">
+                                    <!-- Quick Actions -->
+                                    <div class="flex gap-2">
+                                        <button @click="toggleFavorite(venue, $event)"
+                                            :id="`fav-${venue.id}`"
+                                            class="rounded-full bg-white/90 p-1.5 text-gray-900 hover:bg-white transition-all duration-300">
+                                            <Heart :class="['h-4 w-4 transition-colors',
+                                                venue.isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-700']" />
+                                        </button>
+                                        <button @click="openQuickView(venue, $event)"
+                                            class="rounded-full bg-white/90 p-1.5 text-gray-900 hover:bg-white transition-all duration-300">
+                                            <Info class="h-4 w-4" />
+                                        </button>
+                                    </div>
+                                    <!-- Availability Badge -->
+                                    <span :class="[
+                                        'rounded-full px-3 py-1 text-xs font-medium',
+                                        venue.availableNow
+                                            ? 'bg-green-500/90 text-white'
+                                            : 'bg-gray-500/90 text-white'
+                                    ]">
+                                        {{ venue.availableNow ? 'Tersedia' : 'Penuh' }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Category Badge -->
+                            <div class="absolute right-3 top-3 rounded-full bg-white/95 px-4 py-1
+                                      text-sm font-semibold text-appGreenDark backdrop-blur-sm">
                                 {{ venue.type }}
                             </div>
                         </div>
+
+                        <!-- Content Section -->
                         <div class="p-6">
                             <div class="mb-2 flex items-center justify-between">
                                 <h3 class="text-xl font-bold text-gray-900 dark:text-white">{{ venue.name }}</h3>
@@ -419,13 +485,34 @@ const fetchVenues = async () => {
                             <div class="flex items-center justify-between">
                                 <span class="text-lg font-bold text-appGreenMedium">{{ venue.price }}</span>
                                 <Link :href="`/venues/${venue.id}`"
-                                    @click.stop
-                                    class="rounded-full bg-appGreenLight px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-appGreenMedium focus:ring-2 focus:ring-appGreenLight focus:ring-offset-2">
+                                    class="rounded-full bg-appGreenLight px-6 py-2 text-sm font-semibold text-white
+                                           transition-all hover:bg-appGreenMedium focus:ring-2 focus:ring-appGreenLight focus:ring-offset-2"
+                                >
                                     Booking
                                 </Link>
                             </div>
+                            <!-- Enhanced Facilities -->
+                            <div class="mt-4 flex flex-wrap gap-2">
+                                <span v-for="facility in venue.facilities" :key="facility"
+                                    class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-700 dark:text-gray-300"
+                                >
+                                    {{ facility }}
+                                </span>
+                            </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Map View -->
+        <section v-else class="relative z-20 -mt-20 h-[calc(100vh-64px)]">
+            <!-- Map implementation placeholder -->
+            <div class="absolute inset-0 bg-gray-100">
+                <!-- Venue list overlay -->
+                <div class="absolute left-4 top-4 max-w-sm w-full bg-white rounded-xl shadow-lg p-4
+                            max-h-[calc(100vh-120px)] overflow-y-auto dark:bg-gray-800">
+                    <!-- ... venue list items ... -->
                 </div>
             </div>
         </section>
