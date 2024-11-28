@@ -17,7 +17,8 @@ import {
     ChevronRight,
     X
 } from 'lucide-vue-next';
-import { useCartStore } from '@/Stores/cart'; // Using Pinia for state management
+import { useCartStore } from '@/Stores/cart';
+import { useToast } from '@/Composables/useToast';
 import AnimatedDialog from '@/Components/AnimatedDialog.vue';
 
 const props = defineProps({
@@ -48,18 +49,7 @@ const cartStore = useCartStore();
 const showConfirmModal = ref(false);
 const bookingData = ref(null);
 
-// Initialize reactive refs
-const showToast = ref(false);
-const toastMessage = ref('');
-
-// Toast notification function
-const showNotification = (message, duration = 3000) => {
-    toastMessage.value = message;
-    showToast.value = true;
-    setTimeout(() => {
-        showToast.value = false;
-    }, duration);
-};
+const toast = useToast();
 
 // Simplified selection logic
 const addToBooking = (field) => {
@@ -120,13 +110,29 @@ const timeSlotGroups = computed(() => {
 });
 
 const book = () => {
-    const bookings = Array.from(selectedFields.value.values()).map(({ bookingData, timeSlots }) => ({
-        ...bookingData,
+    if (!props.auth?.user) {
+        toast.warning('Silakan login terlebih dahulu untuk melakukan booking');
+        router.visit('/login');
+        return;
+    }
+
+    if (selectedFields.value.size === 0) {
+        toast.warning('Pilih lapangan terlebih dahulu');
+        return;
+    }
+
+    const bookings = Array.from(selectedFields.value.values()).map(({ field, timeSlots }) => ({
+        fieldId: field.id,
+        name: field.name,
+        type: field.type,
         timeSlots: timeSlots,
-        totalPrice: timeSlots.length * bookingData.price
+        price: field.price,
+        totalPrice: timeSlots.length * field.price,
+        image: field.image,
+        date: selectedDate.value,
+        venueName: props.venue.name
     }));
 
-    // Show confirmation modal
     bookingData.value = bookings;
     showConfirmModal.value = true;
 };
@@ -199,23 +205,61 @@ const addToCart = () => {
             cartStore.addItem(booking);
         });
 
-        showNotification('Berhasil ditambahkan ke keranjang');
-        router.visit('/cart'); // Redirect to cart page
+        toast.success('Berhasil ditambahkan ke keranjang');
+        showConfirmModal.value = false;
+        router.visit('/cart');
     } catch (error) {
-        showNotification('Gagal menambahkan ke keranjang', 'error');
+        toast.error(error.message || 'Gagal menambahkan ke keranjang');
     }
 };
 
 // Direct checkout function
 const directCheckout = () => {
     try {
+        console.log('Starting checkout process');
+
+        // First, ensure bookingData exists and has items
+        if (!bookingData.value || bookingData.value.length === 0) {
+            throw new Error('Tidak ada item untuk checkout');
+        }
+
+        // Clear existing cart first to avoid duplicates
+        cartStore.clearCart();
+
         bookingData.value.forEach(booking => {
-            cartStore.addItem(booking);
+            const cartItem = {
+                fieldId: booking.fieldId,
+                name: booking.fieldName || booking.name, // Handle both possible property names
+                type: booking.type,
+                timeSlots: booking.timeSlots,
+                price: booking.price,
+                totalPrice: booking.totalPrice || (booking.price * booking.timeSlots.length),
+                image: booking.image,
+                date: booking.date,
+                venueName: props.venue.name
+            };
+
+            console.log('Adding item to cart:', cartItem);
+            cartStore.addItem(cartItem);
         });
 
-        router.visit('/checkout'); // Redirect to checkout page
+        showConfirmModal.value = false;
+
+        // Use router.get instead of visit for more reliable navigation
+        router.get('/checkout', {}, {
+            preserveState: true,
+            preserveScroll: true,
+            onSuccess: () => {
+                console.log('Navigation to checkout successful');
+            },
+            onError: (errors) => {
+                console.error('Navigation failed:', errors);
+                toast.error('Gagal menuju halaman checkout');
+            }
+        });
     } catch (error) {
-        showNotification('Gagal memproses checkout', 'error');
+        console.error('Checkout error:', error);
+        toast.error(error.message || 'Gagal memproses checkout');
     }
 };
 
@@ -604,24 +648,7 @@ const selectedField = computed(() => {
             </div>
         </AnimatedDialog>
 
-        <!-- Toast Notification -->
-        <Transition
-            enter-active-class="transform transition-all duration-300"
-            enter-from-class="translate-y-full opacity-0"
-            enter-to-class="translate-y-0 opacity-100"
-            leave-active-class="transform transition-all duration-300"
-            leave-from-class="translate-y-0 opacity-100"
-            leave-to-class="translate-y-full opacity-0"
-        >
-            <div
-                v-if="showToast"
-                class="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-gray-800 px-6 py-3 text-white shadow-lg"
-            >
-                {{ toastMessage }}
-            </div>
-        </Transition>
-
-        <!-- Update Dialog usage -->
+        <!-- Update the confirmation modal -->
         <AnimatedDialog
             :open="showConfirmModal"
             @close="showConfirmModal = false"
@@ -636,6 +663,36 @@ const selectedField = computed(() => {
                 </button>
             </div>
 
+            <!-- Add booking summary -->
+            <div class="mb-6 space-y-4">
+                <div v-for="(booking, index) in bookingData" :key="index"
+                    class="rounded-lg border p-4 dark:border-gray-700">
+                    <div class="flex items-center gap-4">
+                        <img :src="booking.image" :alt="booking.fieldName"
+                            class="h-16 w-16 rounded-lg object-cover" />
+                        <div>
+                            <h4 class="font-medium text-gray-900 dark:text-white">
+                                {{ booking.fieldName }}
+                            </h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                                {{ new Date(booking.date).toLocaleDateString('id-ID', {
+                                    weekday: 'long',
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
+                                }) }}
+                            </p>
+                            <div class="mt-2 flex flex-wrap gap-2">
+                                <span v-for="slot in booking.timeSlots" :key="slot"
+                                    class="rounded-full bg-appGreenLight/10 px-2 py-1 text-xs font-medium text-appGreenDark dark:text-appGreenLight">
+                                    {{ slot }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="space-y-4">
                 <button @click="addToCart"
                     class="flex w-full items-center justify-center gap-2 rounded-xl bg-appGreenLight p-4 text-white transition-colors hover:bg-appGreenMedium">
@@ -644,7 +701,7 @@ const selectedField = computed(() => {
                 </button>
 
                 <button @click="directCheckout"
-                    class="flex w-full items-center justify-center gap-2 rounded-xl border border-appGreenLight p-4 text-appGreenDark transition-colors hover:bg-appGreenLight/10">
+                    class="flex w-full items-center justify-center gap-2 rounded-xl border border-appGreenLight p-4 text-appGreenDark transition-colors hover:bg-appGreenLight/10 dark:text-appGreenLight">
                     <CreditCard class="h-5 w-5" />
                     Langsung Checkout
                 </button>

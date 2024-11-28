@@ -7,9 +7,12 @@ export const useCartStore = defineStore('cart', () => {
   // Computed properties
   const itemCount = computed(() => items.value.length);
   const hasItems = computed(() => items.value.length > 0);
-  const total = computed(() =>
-    items.value.reduce((sum, item) => sum + item.totalPrice, 0)
-  );
+  const total = computed(() => {
+    return items.value.reduce((sum, item) => {
+      if (!item.price || !item.timeSlots) return sum;
+      return sum + (item.price * item.timeSlots.length);
+    }, 0);
+  });
 
   // Actions
   function addItem(item) {

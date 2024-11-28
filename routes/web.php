@@ -181,30 +181,64 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Checkout page
     Route::get('/checkout', function () {
-        // Dummy checkout data
-        $checkoutData = [
-            'items' => [
-                [
-                    'id' => 1,
-                    'venue_name' => 'Lapangan Futsal Bintang',
-                    'date' => '2024-02-20',
-                    'start_time' => '18:00',
-                    'end_time' => '20:00',
-                    'price' => 250000,
-                ],
-            ],
-            'subtotal' => 250000,
-            'service_fee' => 5000,
-            'total' => 255000,
-        ];
-
-        return Inertia::render('User/Checkout', [
-            'checkoutData' => $checkoutData,
+        return Inertia::render('Checkout', [
             'auth' => [
                 'user' => Auth::user()
-            ]
+            ],
+            'paymentMethods' => [
+                [
+                    'id' => 'gopay',
+                    'name' => 'GoPay',
+                    'icon' => '/images/payment/gopay.png'
+                ],
+                [
+                    'id' => 'ovo',
+                    'name' => 'OVO',
+                    'icon' => '/images/payment/ovo.png'
+                ],
+                [
+                    'id' => 'dana',
+                    'name' => 'DANA',
+                    'icon' => '/images/payment/dana.png'
+                ],
+                [
+                    'id' => 'bca',
+                    'name' => 'Transfer Bank BCA',
+                    'icon' => '/images/payment/bca.png'
+                ]
+            ],
+            'adminFee' => 5000
         ]);
-    })->name('checkout.index');
+    })->name('checkout');
+
+    // Process payment
+    Route::post('/checkout/process', function () {
+        $validated = request()->validate([
+            'payment_method' => 'required|string',
+            'items' => 'required|array',
+            'total_amount' => 'required|numeric'
+        ]);
+
+        // Here you would typically:
+        // 1. Create order record
+        // 2. Process payment with payment gateway
+        // 3. Clear cart after successful payment
+        // 4. Create booking records
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Pembayaran berhasil diproses',
+            'booking_id' => 'BOOK-' . time() // Generate proper booking ID in production
+        ]);
+    })->name('checkout.process');
+
+    // Payment callback (for async payment notifications)
+    Route::post('/payment/callback', function () {
+        // Handle payment gateway callbacks
+        // Verify payment status
+        // Update order status
+        // Send notification to user
+    })->name('payment.callback');
 
     // Dashboard
     Route::get('/dashboard', function () {
@@ -302,6 +336,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'transactions' => [/* paginated transactions */]
         ]);
     })->name('transactions.index');
+
+    // Add these middlewares for better security
+    Route::middleware(['auth', 'verified', 'throttle:payment'])->group(function () {
+        Route::post('/checkout/process', [CheckoutController::class, 'process'])
+            ->middleware(['validate.cart', 'prevent.double.booking'])
+            ->name('checkout.process');
+    });
 });
 
 Route::middleware(['auth'])->group(function () {
