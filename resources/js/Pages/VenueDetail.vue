@@ -1,14 +1,30 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { MapPin, Calendar, DollarSign, Star, Info, Shield, Dumbbell, ChevronRight, X } from 'lucide-vue-next';
+import { Dialog, DialogPanel } from '@headlessui/vue';
+import {
+    ShoppingCart,
+    CreditCard,
+    MapPin,
+    Calendar,
+    DollarSign,
+    Star,
+    Info,
+    Shield,
+    Dumbbell,
+    ChevronRight,
+    X
+} from 'lucide-vue-next';
 import { useCartStore } from '@/Stores/cart'; // Using Pinia for state management
-import { router } from '@inertiajs/vue3';
 
 const props = defineProps({
     auth: {
+        type: Object,
+        default: () => ({ user: null })
+    },
+    venue: {
         type: Object,
         required: true
     }
@@ -114,6 +130,19 @@ const cartStore = useCartStore();
 const showConfirmModal = ref(false);
 const bookingData = ref(null);
 
+// Initialize reactive refs
+const showToast = ref(false);
+const toastMessage = ref('');
+
+// Toast notification function
+const showNotification = (message, duration = 3000) => {
+    toastMessage.value = message;
+    showToast.value = true;
+    setTimeout(() => {
+        showToast.value = false;
+    }, duration);
+};
+
 // Simplified selection logic
 const addToBooking = (field) => {
     if (!field.available) return;
@@ -177,14 +206,6 @@ const book = () => {
     // Show confirmation modal
     bookingData.value = bookings;
     showConfirmModal.value = true;
-};
-
-const showNotification = (message) => {
-  toastMessage.value = message;
-  showToast.value = true;
-  setTimeout(() => {
-    showToast.value = false;
-  }, 3000);
 };
 
 // Add smooth scrolling
@@ -620,24 +641,29 @@ const directCheckout = () => {
             </div>
         </Transition>
 
-        <!-- Add Confirmation Modal -->
-        <Dialog v-if="showConfirmModal" @close="showConfirmModal = false">
-            <div class="p-6">
-                <h3 class="text-lg font-semibold mb-4">Pilih Metode Booking</h3>
+        <!-- Update Dialog usage -->
+        <Dialog
+            v-if="showConfirmModal"
+            @close="showConfirmModal = false"
+            class="relative z-50"
+        >
+            <div class="fixed inset-0 bg-black/30" aria-hidden="true" />
+            <div class="fixed inset-0 flex items-center justify-center p-4">
+                <DialogPanel class="w-full max-w-md rounded-2xl bg-white p-6 dark:bg-gray-800">
+                    <div class="space-y-4">
+                        <button @click="addToCart"
+                            class="w-full flex items-center justify-center gap-2 p-4 rounded-xl bg-appGreenLight text-white hover:bg-appGreenMedium transition-colors">
+                            <ShoppingCart class="w-5 h-5" />
+                            Tambah ke Keranjang
+                        </button>
 
-                <div class="space-y-4">
-                    <button @click="addToCart"
-                        class="w-full flex items-center justify-center gap-2 p-4 rounded-xl bg-appGreenLight text-white hover:bg-appGreenMedium transition-colors">
-                        <LucideShoppingCart class="w-5 h-5" />
-                        Tambah ke Keranjang
-                    </button>
-
-                    <button @click="directCheckout"
-                        class="w-full flex items-center justify-center gap-2 p-4 rounded-xl border border-appGreenLight text-appGreenDark hover:bg-appGreenLight/10 transition-colors">
-                        <LucideCreditCard class="w-5 h-5" />
-                        Langsung Checkout
-                    </button>
-                </div>
+                        <button @click="directCheckout"
+                            class="w-full flex items-center justify-center gap-2 p-4 rounded-xl border border-appGreenLight text-appGreenDark hover:bg-appGreenLight/10 transition-colors">
+                            <CreditCard class="w-5 h-5" />
+                            Langsung Checkout
+                        </button>
+                    </div>
+                </DialogPanel>
             </div>
         </Dialog>
     </Layout>

@@ -18,13 +18,15 @@ createInertiaApp({
             import.meta.glob('./Pages/**/*.vue'),
         ),
     setup({ el, App, props, plugin }) {
-        const app = createApp({ render: () => h(App, props) })
-            .use(plugin)
-            .use(ZiggyVue)
-            .use(Vue3TouchEvents)
-            .mount(el);
         const pinia = createPinia()
-        app.use(pinia)
+        const app = createApp({ render: () => h(App, props) })
+
+        app.use(plugin)
+           .use(ZiggyVue)
+           .use(Vue3TouchEvents)
+           .use(pinia)
+           .mount(el);
+
         return app;
     },
     progress: {

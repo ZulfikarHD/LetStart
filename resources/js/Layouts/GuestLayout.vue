@@ -7,7 +7,7 @@ const showingNavigationDropdown = ref(false);
 
 const navigationItems = [
   { name: 'List Venue', href: '/venue-listing', icon: List },
-  { name: 'Kategori Olahraga', href: '/sport-categories', icon: Dumbbell },
+  { name: 'Kategori Olahraga', href: '/sport-category', icon: Dumbbell },
   { name: 'Bantuan', href: '/help', icon: HelpCircle },
 ];
 
@@ -15,7 +15,7 @@ const footerLinks = {
   quickLinks: [
     { name: 'Tentang Kami', href: '/about' },
     { name: 'List Venue', href: '/venue-listing' },
-    { name: 'Kategori Olahraga', href: '/sport-categories' },
+    { name: 'Kategori Olahraga', href: '/sport-category' },
     { name: 'Bantuan', href: '/help' },
   ],
   support: [
