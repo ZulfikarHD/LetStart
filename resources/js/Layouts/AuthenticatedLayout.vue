@@ -1,8 +1,9 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
-import { Menu, X, ChevronDown, Home, Calendar, Settings, LogOut, List, Dumbbell, HelpCircle, ShoppingCart, Bell, User, CreditCard, Shield } from 'lucide-vue-next';
+import { Menu, X, ChevronDown, Home, Calendar, Settings, LogOut, List, Dumbbell, HelpCircle, ShoppingCart, Bell, User, CreditCard, Shield, Heart } from 'lucide-vue-next';
 import Footer from '@/Layouts/Footer/Index.vue';
+import Toast from '@/Components/Toast.vue'
 
 const showingNavigationDropdown = ref(false);
 const showUserMenu = ref(false);
@@ -48,6 +49,12 @@ const userMenuItems = [
         name: 'Pembayaran',
         href: route('settings.index', { tab: 'payments' }),
         icon: CreditCard
+      },
+      {
+        name: 'Preferensi',
+        href: route('settings.index', { tab: 'preferences' }),
+        icon: Heart,
+        description: 'Olahraga & Venue Favorit'
       },
       {
         name: 'Keamanan',
@@ -290,5 +297,6 @@ onUnmounted(() => {
 
     <!-- Replace footer with new component -->
     <Footer />
+    <Toast />
   </div>
 </template>

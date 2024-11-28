@@ -221,29 +221,87 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('profile.show');
 
     Route::get('/settings', function () {
-        // Get the tab from query parameter, default to 'notifications'
         $tab = request()->query('tab', 'notifications');
 
-        // Map tab names to their components
         $components = [
             'notifications' => 'User/Settings/NotificationSettings',
             'security' => 'User/Settings/SecuritySettings',
             'payments' => 'User/Settings/PaymentSettings',
+            'preferences' => 'User/Settings/PreferencesSettings',
         ];
 
-        // Get the component name based on tab, fallback to notifications
         $component = $components[$tab] ?? $components['notifications'];
 
-        return Inertia::render($component, [
+        // Add dummy data for preferences
+        $data = [
             'auth' => [
                 'user' => Auth::user()
             ],
             'currentTab' => $tab
-        ]);
+        ];
+
+        // Add preferences specific data when needed
+        if ($tab === 'preferences') {
+            $data['favoriteSports'] = [
+                [
+                    'id' => 1,
+                    'name' => 'Futsal',
+                    'active' => true
+                ],
+                [
+                    'id' => 2,
+                    'name' => 'Basket',
+                    'active' => true
+                ],
+                [
+                    'id' => 3,
+                    'name' => 'Badminton',
+                    'active' => false
+                ],
+                [
+                    'id' => 4,
+                    'name' => 'Voli',
+                    'active' => false
+                ]
+            ];
+
+            $data['favoriteVenues'] = [
+                [
+                    'id' => 1,
+                    'name' => 'GOR Sahabat Futsal',
+                    'location' => 'Jakarta Selatan',
+                    'sport' => 'Futsal',
+                    'rating' => 4.8,
+                ],
+                [
+                    'id' => 2,
+                    'name' => 'Basket Arena Champions',
+                    'location' => 'Jakarta Pusat',
+                    'sport' => 'Basket',
+                    'rating' => 4.5,
+                ],
+                [
+                    'id' => 3,
+                    'name' => 'PB Sejahtera',
+                    'location' => 'Jakarta Timur',
+                    'sport' => 'Badminton',
+                    'rating' => 4.9,
+                ]
+            ];
+        }
+
+        return Inertia::render($component, $data);
     })->name('settings.index');
 
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Dedicated transaction history page
+    Route::get('/transactions', function () {
+        return Inertia::render('User/TransactionHistory', [
+            'transactions' => [/* paginated transactions */]
+        ]);
+    })->name('transactions.index');
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -257,17 +315,15 @@ Route::middleware(['auth'])->group(function () {
     })->name('profile.show');
 
     Route::get('/settings', function () {
-        // Get the tab from query parameter, default to 'notifications'
         $tab = request()->query('tab', 'notifications');
 
-        // Map tab names to their components
         $components = [
             'notifications' => 'User/Settings/NotificationSettings',
             'security' => 'User/Settings/SecuritySettings',
             'payments' => 'User/Settings/PaymentSettings',
+            'preferences' => 'User/Settings/PreferencesSettings/Index',
         ];
 
-        // Get the component name based on tab, fallback to notifications
         $component = $components[$tab] ?? $components['notifications'];
 
         return Inertia::render($component, [
