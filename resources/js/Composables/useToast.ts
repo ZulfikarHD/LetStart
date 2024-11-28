@@ -4,13 +4,27 @@ interface Toast {
   message: string
   type: 'success' | 'error' | 'warning' | 'info'
   id: number
+  title?: string
+  duration?: number
+  action?: {
+    label: string
+    onClick: () => void
+  }
+  icon?: string
 }
 
 const toasts = ref<Toast[]>([])
 let nextId = 0
 
 export function useToast() {
-  const showToast = (message: string, type: Toast['type'] = 'info') => {
+  const showToast = ({
+    message,
+    type = 'info',
+    title,
+    duration = 3000,
+    action,
+    icon
+  }: Omit<Toast, 'id'>) => {
     const id = nextId++
 
     // Add new toast
@@ -18,12 +32,18 @@ export function useToast() {
       message,
       type,
       id,
+      title,
+      duration,
+      action,
+      icon
     })
 
-    // Automatically remove toast after 3 seconds
-    setTimeout(() => {
-      removeToast(id)
-    }, 3000)
+    // Don't auto-remove if there's an action
+    if (!action) {
+      setTimeout(() => {
+        removeToast(id)
+      }, duration)
+    }
   }
 
   const removeToast = (id: number) => {
@@ -33,9 +53,19 @@ export function useToast() {
     }
   }
 
+  // Convenience methods
+  const success = (message: string, options = {}) => showToast({ message, type: 'success', ...options })
+  const error = (message: string, options = {}) => showToast({ message, type: 'error', ...options })
+  const warning = (message: string, options = {}) => showToast({ message, type: 'warning', ...options })
+  const info = (message: string, options = {}) => showToast({ message, type: 'info', ...options })
+
   return {
     toasts,
     showToast,
     removeToast,
+    success,
+    error,
+    warning,
+    info
   }
 }

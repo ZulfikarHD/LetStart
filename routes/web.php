@@ -297,8 +297,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Dedicated transaction history page
-    Route::get('/transactions', function () {
-        return Inertia::render('User/TransactionHistory', [
+    Route::get('/transaction-history', function () {
+        return Inertia::render('User/TransactionHistory/Index', [
             'transactions' => [/* paginated transactions */]
         ]);
     })->name('transactions.index');

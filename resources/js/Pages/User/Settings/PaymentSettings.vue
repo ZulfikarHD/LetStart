@@ -6,8 +6,9 @@ import {
   Search, Calendar, Filter
 } from 'lucide-vue-next';
 import DeleteConfirmationModal from '@/Components/Settings/DeleteConfirmationModal.vue';
-import FeedbackToast from '@/Components/Settings/FeedbackToast.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { Link } from '@inertiajs/vue3';
+import { useToast } from '@/Composables/useToast';
 
 // Dummy data
 const paymentMethods = ref([
@@ -104,11 +105,6 @@ const transactionFilters = ref({
 const currentPage = ref(1);
 const itemsPerPage = 5;
 
-// Add success/error feedback
-const showFeedback = ref(false);
-const feedbackMessage = ref('');
-const feedbackType = ref('success');
-
 // Add confirmation before delete
 const showDeleteConfirm = ref(false);
 const paymentMethodToDelete = ref(null);
@@ -161,14 +157,16 @@ const monthlyTotal = computed(() => {
     .reduce((total, transaction) => total + transaction.amount, 0);
 });
 
+// Add toast composable
+const { success, error } = useToast();
+
 // Methods
 const showToast = (message, type = 'success') => {
-  feedbackMessage.value = message;
-  feedbackType.value = type;
-  showFeedback.value = true;
-  setTimeout(() => {
-    showFeedback.value = false;
-  }, 3000);
+  if (type === 'success') {
+    success(message);
+  } else {
+    error(message);
+  }
 };
 
 const confirmDelete = (method) => {
@@ -181,13 +179,33 @@ const handleDelete = () => {
     removePaymentMethod(paymentMethodToDelete.value.id);
     showDeleteConfirm.value = false;
     paymentMethodToDelete.value = null;
-    showToast('Metode pembayaran berhasil dihapus');
+    success('Metode pembayaran berhasil dihapus', {
+      title: 'Berhasil Dihapus',
+      duration: 4000,
+      action: {
+        label: 'Urungkan',
+        onClick: () => {
+          // Add undo logic here
+        }
+      }
+    });
   }
 };
 
 const setAsDefault = (method) => {
   setDefaultPaymentMethod(method.id);
-  showToast(`${method.name} telah diatur sebagai metode pembayaran utama`);
+  success(`${method.name} telah diatur sebagai metode pembayaran utama`);
+};
+
+// Add form validation
+const formErrors = ref({});
+const validateForm = () => {
+  formErrors.value = {};
+  if (!newPaymentForm.value.number) {
+    formErrors.value.number = 'Nomor kartu harus diisi';
+  }
+  // Add more validations...
+  return Object.keys(formErrors.value).length === 0;
 };
 </script>
 
@@ -233,18 +251,6 @@ const setAsDefault = (method) => {
             <div class="mt-1 text-xl font-bold text-gray-900 dark:text-white">{{ formatCurrency(monthlyTotal) }}</div>
           </div>
         </div>
-      </div>
-
-      <!-- Feedback Toast -->
-      <div
-        v-if="showFeedback"
-        :class="[
-          'fixed bottom-4 right-4 p-4 rounded-xl shadow-xl transition-all transform duration-300',
-          feedbackType === 'success' ? 'bg-gradient-to-r from-green-500 to-green-600' : 'bg-gradient-to-r from-red-500 to-red-600',
-          'text-white backdrop-blur-sm'
-        ]"
-      >
-        {{ feedbackMessage }}
       </div>
 
       <!-- Transaction Filters -->
@@ -376,9 +382,12 @@ const setAsDefault = (method) => {
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
             Riwayat Transaksi
           </h3>
-          <button class="text-sm font-medium text-appBlueMedium hover:text-appBlueDark dark:text-appBlueLight transition-colors duration-200">
+          <Link
+            href="/transaction-history"
+            class="text-sm font-medium text-appBlueMedium hover:text-appBlueDark dark:text-appBlueLight transition-colors duration-200"
+          >
             Lihat Semua
-          </button>
+          </Link>
         </div>
 
         <div class="mt-8 space-y-4">
@@ -461,6 +470,28 @@ const setAsDefault = (method) => {
           {{ page }}
         </button>
       </div>
+
+      <!-- Add empty state illustrations -->
+      <div v-if="!filteredTransactions.length" class="text-center py-12">
+        <Receipt class="h-16 w-16 mx-auto text-gray-400" />
+        <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">
+          Belum ada transaksi
+        </h3>
+        <p class="mt-2 text-gray-500 dark:text-gray-400">
+          Transaksi Anda akan muncul di sini setelah Anda melakukan pembayaran
+        </p>
+      </div>
+
+      <!-- Add search results feedback -->
+      <div v-if="transactionFilters.search && !filteredTransactions.length" class="text-center py-12">
+        <Search class="h-16 w-16 mx-auto text-gray-400" />
+        <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">
+          Tidak ada hasil
+        </h3>
+        <p class="mt-2 text-gray-500 dark:text-gray-400">
+          Coba kata kunci lain atau ubah filter pencarian
+        </p>
+      </div>
     </div>
   </AuthenticatedLayout>
 
@@ -473,11 +504,8 @@ const setAsDefault = (method) => {
     @confirm="handleDelete"
   />
 
-  <FeedbackToast
-    v-if="showFeedback"
-    :show="showFeedback"
-    :message="feedbackMessage"
-    :type="feedbackType"
-    @close="showFeedback = false"
-  />
+  <!-- Add loading skeleton -->
+  <div v-if="isLoading" class="animate-pulse">
+    <!-- ... skeleton layout ... -->
+  </div>
 </template>
