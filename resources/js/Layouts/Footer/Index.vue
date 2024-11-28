@@ -6,7 +6,7 @@ import FooterSocial from './FooterSocial.vue';
 import FooterContact from './FooterContact.vue';
 
 const quickLinks = [
-  { name: 'Tentang Kami', href: '/about' },
+  { name: 'Tentang Kami', href: '/about-us' },
   { name: 'List Venue', href: '/venue-listing' },
   { name: 'Kategori Olahraga', href: '/sport-category' },
   { name: 'Bantuan', href: '/help' },
@@ -15,7 +15,7 @@ const quickLinks = [
 const supportLinks = [
   { name: 'FAQ', href: '/faq' },
   { name: 'Kebijakan Privasi', href: '/privacy-policy' },
-  { name: 'Syarat & Ketentuan', href: '/terms' },
+  { name: 'Syarat & Ketentuan', href: '/terms-and-conditions' },
 ];
 </script>
 

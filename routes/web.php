@@ -28,6 +28,15 @@ Route::get('/sport-category', function () {
     ]);
 });
 
+// About Us route
+Route::get('/about-us', function () {
+    return Inertia::render('AboutUs', [
+        'auth' => [
+            'user' => Auth::user()
+        ]
+    ]);
+})->name('about-us');
+
 // Venue routes
 Route::get('/venues', function () {
     return Inertia::render('VenueListing', [
@@ -379,5 +388,143 @@ Route::middleware(['auth'])->group(function () {
         return Inertia::render('User/MyBookings');
     })->name('bookings.index');
 });
+
+Route::get('/faq', function () {
+    return Inertia::render('Support/Faq', [
+        'faqs' => [
+            // Your existing FAQ data structure
+        ],
+        'categories' => [
+            // Categories data
+        ],
+        'auth' => [
+            'user' => Auth::user()
+        ]
+    ]);
+})->name('faq');
+
+// Add contact route for the contact form
+Route::get('/contact', function () {
+    return Inertia::render('Support/Contact', [
+        'isAuthenticated' => Auth::check()
+    ]);
+})->name('contact');
+
+// Add route for FAQ feedback
+Route::post('/faq/feedback', function () {
+    // Validate and store feedback
+    request()->validate([
+        'faqId' => 'required|integer',
+        'helpful' => 'required|boolean'
+    ]);
+
+    // Store feedback logic here
+
+    return response()->json(['message' => 'Feedback recorded']);
+})->middleware(['throttle:feedback']);
+
+// Help Center routes - accessible to both guests and authenticated users
+Route::get('/help', function () {
+    $faqs = [
+        [
+            'id' => 1,
+            'question' => 'Bagaimana cara membatalkan booking?',
+            'answer' => 'Anda dapat membatalkan booking melalui halaman "Booking Saya" minimal 24 jam sebelum jadwal.',
+            'helpful' => 0,
+            'notHelpful' => 0
+        ],
+        [
+            'id' => 2,
+            'question' => 'Apa saja metode pembayaran yang tersedia?',
+            'answer' => 'Kami menerima pembayaran melalui GoPay, OVO, DANA, dan transfer bank BCA.',
+            'helpful' => 0,
+            'notHelpful' => 0
+        ],
+        // ... more FAQs
+    ];
+
+    return Inertia::render('Support/Help', [
+        'isAuthenticated' => Auth::check(),
+        'user' => Auth::user(),
+        'faqs' => $faqs,
+        'popularArticles' => [
+            [
+                'id' => 1,
+                'title' => 'Cara Melakukan Booking Venue',
+                'category' => 'Booking',
+                'url' => '/help/booking'
+            ],
+            [
+                'id' => 2,
+                'title' => 'Metode Pembayaran yang Tersedia',
+                'category' => 'Pembayaran',
+                'url' => '/help/payment'
+            ],
+            // ... more articles
+        ]
+    ]);
+})->name('help');
+
+// Help article detail - accessible to both guests and authenticated users
+Route::get('/help/{slug}', function ($slug) {
+    return Inertia::render('Support/HelpArticle', [
+        'isAuthenticated' => Auth::check(),
+        'user' => Auth::user(),
+        'article' => [
+            'title' => 'Cara Melakukan Booking Venue',
+            'content' => 'Lorem ipsum...',
+            'category' => 'Booking',
+            'lastUpdated' => '2024-02-20',
+            // ... more article data
+        ]
+    ]);
+})->name('help.article');
+
+// Help article feedback endpoint - add throttle middleware but allow guest access
+Route::post('/help/feedback', function () {
+    request()->validate([
+        'articleId' => 'required|integer',
+        'isHelpful' => 'required|boolean'
+    ]);
+
+    return response()->json(['message' => 'Terima kasih atas feedback Anda']);
+})->middleware(['throttle:feedback']);
+
+Route::get('/terms-and-conditions', function () {
+    return Inertia::render('Support/TermAndCondition', [
+        'isAuthenticated' => Auth::check(),
+        'lastUpdated' => '20 Februari 2024'
+    ]);
+})->name('terms');
+
+Route::get('/privacy-policy', function () {
+    return Inertia::render('Support/TermAndPrivacy', [
+        'isAuthenticated' => Auth::check(),
+        'lastUpdated' => '20 Februari 2024',
+        'privacyContent' => [
+            'sections' => [
+                [
+                    'title' => 'Informasi yang Kami Kumpulkan',
+                    'content' => [
+                        'Data Pribadi (nama, email, nomor telepon)',
+                        'Informasi Lokasi',
+                        'Data Penggunaan Aplikasi',
+                        'Informasi Pembayaran'
+                    ]
+                ],
+                [
+                    'title' => 'Penggunaan Informasi',
+                    'content' => [
+                        'Memproses pemesanan venue',
+                        'Mengirim notifikasi terkait booking',
+                        'Meningkatkan layanan kami',
+                        'Keamanan dan pencegahan penipuan'
+                    ]
+                ],
+                // Add more sections as needed
+            ]
+        ]
+    ]);
+})->name('privacy-policy');
 
 require __DIR__.'/auth.php';
