@@ -3,9 +3,9 @@ import { ref, watch } from 'vue';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import { Tab } from '@headlessui/vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import SecuritySettings from '@/Components/Settings/SecuritySettings.vue';
-import PaymentSettings from '@/Components/Settings/PaymentSettings.vue';
-import NotificationSettings from '@/Components/Settings/NotificationSettings.vue';
+import SecuritySettings from '@/SecuritySettings.vue';
+import PaymentSettings from '@/PaymentSettings.vue';
+import NotificationSettings from '@/NotificationSettings.vue';
 
 const page = usePage();
 const currentTab = ref(0);
