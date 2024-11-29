@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import { Menu, X, List, Dumbbell, HelpCircle, LogIn, UserPlus, Facebook, Instagram, Twitter, Mail, Phone } from 'lucide-vue-next';
 import Footer from '@/Layouts/Footer/Index.vue';
-
+import Logo from '@/Components/Logo.vue';
 const showingNavigationDropdown = ref(false);
 
 const navigationItems = [
@@ -22,8 +22,8 @@ const navigationItems = [
           <!-- Logo & Main Nav -->
           <div class="flex items-center gap-8">
             <Link href="/"
-                  class="text-2xl font-bold text-appGreenDark transition-colors hover:text-appGreenMedium dark:text-appGreenLight">
-              MainNow
+                  class="flex items-center">
+              <Logo />
             </Link>
 
             <!-- Desktop Navigation -->
