@@ -15,7 +15,8 @@ import {
     Shield,
     Dumbbell,
     ChevronRight,
-    X
+    X,
+    ChevronLeft
 } from 'lucide-vue-next';
 import { useCartStore } from '@/Stores/cart';
 import { useToast } from '@/Composables/useToast';
@@ -187,7 +188,7 @@ const closeFieldDetail = () => {
 };
 
 const nextImage = () => {
-    if (selectedField.value && currentImageIndex.value < selectedField.value.images.length - 1) {
+    if (currentImageIndex.value < props.venue.images.length - 1) {
         currentImageIndex.value++;
     }
 };
@@ -275,12 +276,116 @@ const selectedField = computed(() => {
 
         <div class="min-h-screen bg-gray-50 py-8 dark:bg-gray-900">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <!-- Venue Images Gallery -->
-                <div class="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3">
-                    <div v-for="(image, index) in venue.images" :key="index"
-                        class="aspect-[4/3] overflow-hidden rounded-2xl">
-                        <img :src="image" :alt="`${venue.name} - Image ${index + 1}`"
-                            class="h-full w-full object-cover transition-transform duration-300 hover:scale-105" />
+                <!-- Venue Hero Section -->
+                <div class="relative mb-8">
+                    <!-- Main Image Gallery -->
+                    <div class="relative overflow-hidden rounded-3xl bg-gray-100 dark:bg-gray-800">
+                        <!-- Main Image -->
+                        <div class="relative aspect-[21/9] w-full overflow-hidden lg:aspect-[21/8]">
+                            <!-- Use transition group for smooth image changes -->
+                            <TransitionGroup
+                                name="fade-slide"
+                                tag="div"
+                                class="relative h-full w-full"
+                            >
+                                <img
+                                    :key="currentImageIndex"
+                                    :src="venue.images[currentImageIndex]"
+                                    :alt="`${venue.name} - Image ${currentImageIndex + 1}`"
+                                    class="absolute h-full w-full object-cover"
+                                />
+                            </TransitionGroup>
+
+                            <!-- Gradient Overlay -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+
+                            <!-- Hero Content Overlay -->
+                            <div class="absolute inset-x-0 bottom-0 p-4 text-white sm:p-6 lg:p-8">
+                                <div class="mx-auto max-w-7xl">
+                                    <div class="flex flex-col gap-2">
+                                        <!-- Venue Type Badge -->
+                                        <div class="flex items-center gap-2">
+                                            <span class="inline-flex items-center gap-1.5 rounded-full bg-appGreenLight/90 px-3 py-1 text-sm font-medium backdrop-blur-sm">
+                                                <Dumbbell class="h-4 w-4" />
+                                                {{ venue.sports[0] }}
+                                            </span>
+                                            <span class="flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-sm backdrop-blur-sm">
+                                                <Star class="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                                                {{ venue.rating }}
+                                            </span>
+                                        </div>
+
+                                        <!-- Venue Name -->
+                                        <h1 class="text-2xl font-bold sm:text-3xl lg:text-4xl">{{ venue.name }}</h1>
+
+                                        <!-- Location -->
+                                        <div class="flex items-center gap-2 text-white/90">
+                                            <MapPin class="h-5 w-5" />
+                                            <span class="text-sm sm:text-base">{{ venue.address }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Enhanced Navigation Controls -->
+                            <div class="absolute inset-x-0 top-1/2 flex -translate-y-1/2 justify-between px-4">
+                                <button
+                                    @click="prevImage"
+                                    class="group relative rounded-full bg-black/20 p-3 text-white backdrop-blur-sm transition-all duration-300 hover:bg-black/40 disabled:opacity-50 disabled:hover:bg-black/20"
+                                    :disabled="currentImageIndex === 0"
+                                >
+                                    <ChevronLeft class="h-6 w-6 transition-transform duration-300 group-hover:-translate-x-0.5" />
+                                    <span class="absolute -right-2 top-1/2 h-px w-8 -translate-y-1/2 bg-white/0 transition-all duration-300 group-hover:w-12 group-hover:bg-white/20"></span>
+                                </button>
+                                <button
+                                    @click="nextImage"
+                                    class="group relative rounded-full bg-black/20 p-3 text-white backdrop-blur-sm transition-all duration-300 hover:bg-black/40 disabled:opacity-50 disabled:hover:bg-black/20"
+                                    :disabled="currentImageIndex === venue.images.length - 1"
+                                >
+                                    <ChevronRight class="h-6 w-6 transition-transform duration-300 group-hover:translate-x-0.5" />
+                                    <span class="absolute -left-2 top-1/2 h-px w-8 -translate-y-1/2 bg-white/0 transition-all duration-300 group-hover:w-12 group-hover:bg-white/20"></span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Enhanced Thumbnail Strip -->
+                        <div class="relative border-t border-gray-200 bg-white/80 p-4 backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/80">
+                            <div class="mx-auto max-w-7xl">
+                                <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                                    <button
+                                        v-for="(image, index) in venue.images"
+                                        :key="index"
+                                        @click="currentImageIndex = index"
+                                        class="group relative aspect-[4/3] h-16 flex-shrink-0 overflow-hidden rounded-lg transition-all duration-300 hover:scale-105 sm:h-20"
+                                        :class="[
+                                            currentImageIndex === index
+                                                ? 'ring-2 ring-appGreenLight ring-offset-2 dark:ring-offset-gray-900'
+                                                : 'hover:ring-2 hover:ring-appGreenLight/50 hover:ring-offset-2 dark:hover:ring-offset-gray-900'
+                                        ]"
+                                    >
+                                        <img
+                                            :src="image"
+                                            :alt="`${venue.name} - ${index + 1}`"
+                                            class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                        />
+                                        <div
+                                            class="absolute inset-0 bg-black/10 transition-opacity duration-300"
+                                            :class="currentImageIndex === index ? 'opacity-0' : 'opacity-100 group-hover:opacity-0'"
+                                        ></div>
+                                        <!-- Active Indicator -->
+                                        <div
+                                            class="absolute bottom-0 left-0 h-0.5 w-full bg-appGreenLight transition-transform duration-300"
+                                            :class="currentImageIndex === index ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'"
+                                        ></div>
+                                    </button>
+                                </div>
+
+                                <!-- Enhanced Image Counter -->
+                                <div class="absolute right-6 top-4 rounded-full bg-gray-900/10 px-3 py-1.5 text-sm font-medium backdrop-blur-sm transition-all duration-300 hover:bg-gray-900/20 dark:bg-white/10 dark:hover:bg-white/20">
+                                    {{ currentImageIndex + 1 }}/{{ venue.images.length }}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -709,3 +814,30 @@ const selectedField = computed(() => {
         </AnimatedDialog>
     </Layout>
 </template>
+
+<style scoped>
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+    transition: all 0.5s ease;
+}
+
+.fade-slide-enter-from {
+    opacity: 0;
+    transform: translateX(5%);
+}
+
+.fade-slide-leave-to {
+    opacity: 0;
+    transform: translateX(-5%);
+}
+
+/* Hide scrollbar but keep functionality */
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+</style>

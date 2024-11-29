@@ -187,7 +187,7 @@ onUnmounted(() => {
                                     class="h-8 w-8 rounded-full object-cover"
                                     :src="
                                         page.props.auth.user.avatar ||
-                                        '/images/avatar-placeholder.jpg'
+                                        '/images/avatar.png'
                                     "
                                     :alt="page.props.auth.user.name"
                                 />

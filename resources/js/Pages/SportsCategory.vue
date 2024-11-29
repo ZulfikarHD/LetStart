@@ -77,21 +77,31 @@ const loadCategories = async (pageNumber = 1) => {
     // Simulate API call with delay
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    // Generate 6 items per page
-    const newCategories = Array.from({ length: 6 }, (_, index) => ({
-        id: (pageNumber - 1) * 6 + index + 1,
-        name: ['Futsal', 'Badminton', 'Basket', 'Tenis'][index % 4],
-        image: '/images/categories/futsal.jpg',
-        venueCount: Math.floor(Math.random() * 100) + 50,
-        description: 'Lapangan berkualitas untuk olahraga favorit Anda',
-        popularLocations: ['Jakarta Selatan', 'Jakarta Pusat', 'Tangerang'],
-        rating: (4 + Math.random()).toFixed(1),
-        reviews: Math.floor(Math.random() * 500),
-        isFavorite: false,
-        openHours: '06:00 - 23:00',
-        facilities: ['Parkir Luas', 'Toilet', 'Musholla'],
-        priceRange: 'Rp 150.000 - Rp 300.000',
-    }));
+    // Generate 6 items per page with corresponding images
+    const categoryImages = {
+        'Futsal': '/images/sport-type/Soccer-bro.svg',
+        'Badminton': '/images/sport-type/Badminton-bro.svg',
+        'Basket': '/images/sport-type/Basketball-bro.svg',
+        'Tenis': '/images/sport-type/Tennis-bro.svg'
+    };
+
+    const newCategories = Array.from({ length: 6 }, (_, index) => {
+        const sportType = ['Futsal', 'Badminton', 'Basket', 'Tenis'][index % 4];
+        return {
+            id: (pageNumber - 1) * 6 + index + 1,
+            name: sportType,
+            image: categoryImages[sportType],
+            venueCount: Math.floor(Math.random() * 100) + 50,
+            description: 'Lapangan berkualitas untuk olahraga favorit Anda',
+            popularLocations: ['Jakarta Selatan', 'Jakarta Pusat', 'Tangerang'],
+            rating: (4 + Math.random()).toFixed(1),
+            reviews: Math.floor(Math.random() * 500),
+            isFavorite: false,
+            openHours: '06:00 - 23:00',
+            facilities: ['Parkir Luas', 'Toilet', 'Musholla'],
+            priceRange: 'Rp 150.000 - Rp 300.000',
+        };
+    });
 
     if (pageNumber === 1) {
         categories.value = newCategories;

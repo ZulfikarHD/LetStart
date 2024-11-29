@@ -1,12 +1,26 @@
 <script setup>
+import { ref } from 'vue';
 import Checkbox from "@/Components/Checkbox.vue";
 import GuestLayout from "@/Layouts/GuestLayout.vue";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
+import Logo from "@/Components/LogoNoText.vue";
 import { Head, Link, useForm } from "@inertiajs/vue3";
-import { LogIn, Mail, Lock, Facebook, Twitter } from "lucide-vue-next";
+import {
+    LogIn,
+    Mail,
+    Lock,
+    Facebook,
+    Twitter,
+    Eye as EyeIcon,
+    EyeOff as EyeOffIcon,
+    Loader2 as Loader2Icon
+} from "lucide-vue-next";
+
+// Definisikan showPassword ref
+const showPassword = ref(false);
 
 defineProps({
     canResetPassword: {
@@ -41,12 +55,12 @@ const submit = () => {
                     <div class="relative">
                         <div class="absolute -inset-1 rounded-full bg-gradient-to-r from-appGreenLight via-appBlueMedium to-appGreenLight animate-gradient-x blur-lg opacity-75"></div>
                         <div class="relative rounded-full bg-white dark:bg-gray-800 p-4">
-                            <img src="/images/logo.svg" alt="SportVenue Logo" class="h-14 w-14 transform transition-transform hover:scale-110" />
+                            <Logo />
                         </div>
                     </div>
                 </div>
                 <h2 class="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-appGreenLight to-appBlueMedium bg-clip-text text-transparent mb-2 animate-text">
-                    Selamat Datang di SportVenue
+                    Selamat Datang di MaiNow
                 </h2>
                 <p class="text-gray-600 dark:text-gray-400">
                     Booking lapangan olahraga jadi lebih mudah
@@ -88,13 +102,21 @@ const submit = () => {
                         <Lock class="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                         <TextInput
                             id="password"
-                            type="password"
+                            :type="showPassword ? 'text' : 'password'"
                             v-model="form.password"
-                            class="block w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-appGreenLight focus:border-transparent transition duration-200"
+                            class="block w-full pl-12 pr-12 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-appGreenLight focus:border-transparent transition duration-200"
                             required
                             autocomplete="current-password"
                             placeholder="••••••••"
                         />
+                        <button
+                            type="button"
+                            @click="showPassword = !showPassword"
+                            class="absolute right-4 top-1/2 -translate-y-1/2 focus:outline-none focus:text-gray-600 dark:focus:text-gray-300"
+                        >
+                            <EyeIcon v-if="!showPassword" class="h-5 w-5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" />
+                            <EyeOffIcon v-else class="h-5 w-5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" />
+                        </button>
                     </div>
                     <InputError :message="form.errors.password" class="mt-1" />
                 </div>
@@ -126,8 +148,8 @@ const submit = () => {
                         class="group relative w-full flex justify-center py-3 px-4 rounded-xl text-white font-semibold overflow-hidden bg-gradient-to-r from-appGreenLight to-appGreenMedium hover:from-appGreenMedium hover:to-appGreenDark focus:outline-none focus:ring-2 focus:ring-appGreenLight focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-300 disabled:opacity-50 transform hover:scale-[1.02]"
                         :disabled="form.processing"
                     >
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-                            <LogIn class="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                        <span v-if="form.processing" class="absolute left-4">
+                            <Loader2Icon class="h-5 w-5 animate-spin" />
                         </span>
                         <span class="ml-6">{{ form.processing ? "Memproses..." : "Masuk Sekarang" }}</span>
                     </button>

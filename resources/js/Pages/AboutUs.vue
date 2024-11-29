@@ -1,9 +1,11 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { MapPin, Mail, Phone, Instagram, Facebook, Twitter, CheckCircle, AlertCircle } from 'lucide-vue-next';
+import { MapPin, Mail, Phone, Instagram, Facebook, Twitter, CheckCircle, AlertCircle, Loader2, Star, ChevronDown, Linkedin } from 'lucide-vue-next';
+import { useIntersectionObserver } from '@/Composables/useIntersectionObserver'
+import { onMounted } from 'vue'
 
 const props = defineProps({
     auth: {
@@ -21,7 +23,7 @@ const teamMembers = [
     {
         name: 'Karlina Ibrahim',
         role: 'Founder & CEO',
-        image: '/images/team/karina.jpg',
+        image: '/images/team/karlina.jpg',
         description: 'Penggemar olahraga yang berdedikasi untuk membuat olahraga lebih mudah diakses untuk semua orang.'
     },
     {
@@ -33,7 +35,7 @@ const teamMembers = [
     {
         name: 'Zulfikar Hidayatullah',
         role: 'Technical Head',
-        image: '/images/team/zul.jpg',
+        image: '/images/team/zul.png',
         description: 'Insinyur perangkat lunak dengan passion untuk teknologi dan inovasi.'
     }
 ];
@@ -78,6 +80,102 @@ const submitForm = async () => {
     form.reset();
   }, 3000);
 };
+
+// Stats data
+const stats = ref([
+    { label: 'Venue Terdaftar', value: 0, target: 500 },
+    { label: 'Pengguna Aktif', value: 0, target: 10000 },
+    { label: 'Booking Sukses', value: 0, target: 50000 },
+])
+
+// Testimonials data
+const testimonials = [
+    {
+        name: 'Aris Hudin',
+        role: 'Atlet Badminton',
+        image: '/images/testimonial/aris.jpg',
+        content: 'Platform yang sangat membantu untuk booking lapangan. Mudah dan cepat! Saya bisa fokus berlatih tanpa khawatir masalah booking.',
+        rating: 5
+    },
+    {
+        name: 'Rakadithya Septiawan',
+        role: 'Pelatih Futsal',
+        image: '/images/testimonial/raka.jpg',
+        content: 'Sebagai pelatih, saya sangat terbantu dengan platform ini. Jadwal latihan tim jadi lebih terorganisir dan mudah diatur.',
+        rating: 5
+    },
+    {
+        name: 'Achmad Fauzi',
+        role: 'Pemilik Venue',
+        image: '/images/testimonial/fauzi.jpg',
+        content: 'MainNow membantu venue kami mendapatkan lebih banyak pelanggan. Sistem bookingnya sangat efisien dan profesional.',
+        rating: 5
+    }
+]
+
+// FAQ data
+const faqs = ref([
+    {
+        question: 'Bagaimana cara melakukan booking lapangan?',
+        answer: 'Proses booking sangat mudah. Pilih venue, tanggal, dan waktu yang diinginkan, lalu lakukan pembayaran.',
+        isOpen: false
+    },
+    // ... more FAQs
+])
+
+// Animate stats on scroll
+const statsRef = ref(null)
+const { isIntersecting: isStatsVisible } = useIntersectionObserver({
+    threshold: 0.5
+})
+
+// Animate numbers
+const animateNumbers = () => {
+    stats.value.forEach((stat, index) => {
+        let current = 0
+        const increment = stat.target / 100
+        const interval = setInterval(() => {
+            current += increment
+            if (current >= stat.target) {
+                stat.value = stat.target
+                clearInterval(interval)
+            } else {
+                stat.value = Math.floor(current)
+            }
+        }, 20)
+    })
+}
+
+// Watch for stats visibility
+watch(isStatsVisible, (visible) => {
+    if (visible) animateNumbers()
+})
+
+// Form progress computation
+const formProgress = computed(() => {
+    let progress = 0
+    if (form.name) progress += 33.33
+    if (form.email) progress += 33.33
+    if (form.message) progress += 33.34
+    return progress
+})
+
+// Auto-save functionality
+const isAutoSaving = ref(false)
+const autoSaveDebounce = ref(null)
+
+const handleInput = () => {
+    clearTimeout(autoSaveDebounce.value)
+    autoSaveDebounce.value = setTimeout(() => {
+        if (form.name || form.email || form.message) {
+            isAutoSaving.value = true
+            // Simulate auto-save
+            setTimeout(() => {
+                isAutoSaving.value = false
+            }, 1000)
+        }
+    }, 1000)
+}
 </script>
 
 <template>
@@ -87,7 +185,7 @@ const submitForm = async () => {
         <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
             <!-- Hero Section -->
             <section class="relative overflow-hidden bg-appGreenLight py-20 dark:bg-appGreenDark">
-                <div class="absolute inset-0 bg-[url('/images/pattern.svg')] opacity-10"></div>
+                <div class="absolute inset-0 bg-[url('/images/pattern.svg')] opacity-10 animate-subtle-float"></div>
                 <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div class="text-center">
                         <h1 class="mb-4 text-4xl font-bold text-white sm:text-5xl lg:text-6xl">
@@ -97,6 +195,14 @@ const submitForm = async () => {
                             Kami berkomitmen untuk membuat olahraga lebih mudah diakses bagi semua orang melalui platform booking lapangan olahraga yang modern dan terpercaya.
                         </p>
                     </div>
+                </div>
+                <div class="mt-8 flex justify-center gap-4">
+                    <button class="rounded-xl bg-white px-6 py-3 font-semibold text-appGreenDark transition-all hover:bg-gray-100">
+                        Mulai Booking
+                    </button>
+                    <button class="rounded-xl border-2 border-white px-6 py-3 font-semibold text-white transition-all hover:bg-white/10">
+                        Pelajari Lebih Lanjut
+                    </button>
                 </div>
             </section>
 
@@ -129,7 +235,7 @@ const submitForm = async () => {
                             </div>
                         </div>
                         <div class="relative">
-                            <img src="/images/about-illustration.svg" alt="About Illustration"
+                            <img src="/images/svg/Tennis-bro.svg" alt="About Illustration"
                                 class="w-full rounded-2xl object-cover shadow-xl" />
                         </div>
                     </div>
@@ -151,9 +257,12 @@ const submitForm = async () => {
                     <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
                         <div v-for="member in teamMembers" :key="member.name"
                             class="group overflow-hidden rounded-2xl bg-gray-50 transition-all hover:-translate-y-1 hover:shadow-xl dark:bg-gray-900">
-                            <div class="aspect-[4/3] overflow-hidden">
+                            <div class="relative h-[300px] w-full overflow-hidden">
                                 <img :src="member.image" :alt="member.name"
-                                    class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                                    class="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-110"
+                                    loading="lazy"
+                                    onerror="this.onerror=null; this.src='/images/placeholder-profile.jpg';"
+                                />
                             </div>
                             <div class="p-6">
                                 <h3 class="mb-1 text-xl font-semibold text-gray-900 dark:text-white">
@@ -165,6 +274,85 @@ const submitForm = async () => {
                                 <p class="text-gray-600 dark:text-gray-400">
                                     {{ member.description }}
                                 </p>
+                            </div>
+                            <div class="flex justify-center gap-3 p-4 opacity-0 transition-opacity group-hover:opacity-100">
+                                <a href="#" class="rounded-full bg-appGreenLight/10 p-2 text-appGreenDark hover:bg-appGreenLight/20">
+                                    <Linkedin class="h-5 w-5" />
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- New Stats Section -->
+            <section ref="statsRef" class="bg-gradient-to-b from-white to-gray-50 py-16 dark:from-gray-800 dark:to-gray-900">
+                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                        <div v-for="stat in stats" :key="stat.label"
+                             class="transform rounded-2xl bg-white p-6 shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl dark:bg-gray-800">
+                            <div class="text-4xl font-bold text-appGreenDark dark:text-appGreenLight">
+                                {{ stat.value.toLocaleString() }}+
+                            </div>
+                            <div class="mt-2 text-gray-600 dark:text-gray-400">{{ stat.label }}</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- New Testimonials Section -->
+            <section class="py-16">
+                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <h2 class="mb-12 text-center text-3xl font-bold text-gray-900 dark:text-white">
+                        Apa Kata Mereka?
+                    </h2>
+                    <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                        <div v-for="testimonial in testimonials" :key="testimonial.name"
+                             class="rounded-2xl bg-white p-6 shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl dark:bg-gray-800">
+                            <div class="flex items-center gap-4">
+                                <img :src="testimonial.image" :alt="testimonial.name"
+                                     class="h-12 w-12 rounded-full object-cover"
+                                     loading="lazy" />
+                                <div>
+                                    <div class="font-semibold text-gray-900 dark:text-white">
+                                        {{ testimonial.name }}
+                                    </div>
+                                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                                        {{ testimonial.role }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4 text-gray-600 dark:text-gray-400">
+                                {{ testimonial.content }}
+                            </div>
+                            <div class="mt-4 flex gap-1">
+                                <Star v-for="i in testimonial.rating" :key="i"
+                                      class="h-5 w-5 text-yellow-400" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- New FAQ Section -->
+            <section class="bg-gray-50 py-16 dark:bg-gray-900">
+                <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+                    <h2 class="mb-12 text-center text-3xl font-bold text-gray-900 dark:text-white">
+                        Pertanyaan yang Sering Diajukan
+                    </h2>
+                    <div class="space-y-4">
+                        <div v-for="(faq, index) in faqs" :key="index"
+                             class="rounded-xl bg-white shadow-sm dark:bg-gray-800">
+                            <button @click="faq.isOpen = !faq.isOpen"
+                                    class="flex w-full items-center justify-between p-6 text-left">
+                                <span class="font-semibold text-gray-900 dark:text-white">
+                                    {{ faq.question }}
+                                </span>
+                                <ChevronDown :class="['h-5 w-5 transition-transform', faq.isOpen ? 'rotate-180' : '']" />
+                            </button>
+                            <div v-show="faq.isOpen"
+                                 class="px-6 pb-6 text-gray-600 dark:text-gray-400">
+                                {{ faq.answer }}
                             </div>
                         </div>
                     </div>
@@ -227,6 +415,17 @@ const submitForm = async () => {
 
                         <div class="order-1 lg:order-2">
                             <form @submit.prevent="submitForm" class="space-y-6 rounded-2xl bg-white p-8 shadow-lg dark:bg-gray-800">
+                                <div class="relative mb-4 h-1 w-full rounded-full bg-gray-200">
+                                    <div class="absolute h-full rounded-full bg-appGreenLight transition-all"
+                                         :style="{ width: formProgress + '%' }">
+                                    </div>
+                                </div>
+                                <div v-if="isAutoSaving" class="text-sm text-gray-500">
+                                    <span class="flex items-center gap-2">
+                                        <Loader2 class="h-4 w-4 animate-spin" />
+                                        Menyimpan...
+                                    </span>
+                                </div>
                                 <div class="mb-8 text-center">
                                     <h3 class="text-2xl font-bold text-gray-900 dark:text-white">
                                         Kirim Pesan Kepada Kami
@@ -339,3 +538,24 @@ const submitForm = async () => {
         </div>
     </Layout>
 </template>
+
+<style>
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+.animate-subtle-float {
+    animation: float 6s ease-in-out infinite;
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>

@@ -55,9 +55,10 @@ Route::get('/venues/{id}', function ($id) {
         'address' => 'Jl. Raya Sport Center No. 123, Jakarta Selatan',
         'description' => 'Fasilitas olahraga modern dengan berbagai lapangan berkualitas tinggi. Dilengkapi dengan fasilitas pendukung lengkap untuk kenyamanan pengunjung.',
         'images' => [
-            '/images/venues/venue-1.jpg',
-            '/images/venues/venue-2.jpg',
-            '/images/venues/venue-3.jpg'
+            '/images/venue/soccer.jpg',
+            '/images/venue/basket.jpg',
+            '/images/venue/badminton.jpg',
+            '/images/venue/futsal.jpg'
         ],
         'amenities' => [
             'Parkir Luas',
@@ -72,14 +73,14 @@ Route::get('/venues/{id}', function ($id) {
                 'id' => 1,
                 'name' => 'Lapangan Badminton 1',
                 'type' => 'Badminton',
-                'image' => '/images/venues/badminton-1.jpg',
+                'image' => '/images/venue/badminton.jpg',
                 'price' => 100000,
                 'equipment' => ['Net', 'Lighting'],
                 'available' => true,
                 'images' => [
-                    '/images/venues/badminton-1-1.jpg',
-                    '/images/venues/badminton-1-2.jpg',
-                    '/images/venues/badminton-1-3.jpg'
+                    '/images/venue/badminton.jpg',
+                    '/images/venue/badminton.jpg',
+                    '/images/venue/badminton.jpg'
                 ],
                 'description' => 'Lapangan badminton dengan lantai vinyl kualitas internasional'
             ],
@@ -87,18 +88,47 @@ Route::get('/venues/{id}', function ($id) {
                 'id' => 2,
                 'name' => 'Lapangan Basket Indoor',
                 'type' => 'Basket',
-                'image' => '/images/venues/basket-1.jpg',
+                'image' => '/images/venue/basket.jpg',
                 'price' => 150000,
                 'equipment' => ['Ring Standar', 'Lighting'],
                 'available' => true,
                 'images' => [
-                    '/images/venues/basket-1-1.jpg',
-                    '/images/venues/basket-1-2.jpg',
-                    '/images/venues/basket-1-3.jpg'
+                    '/images/venue/basket.jpg',
+                    '/images/venue/basket.jpg',
+                    '/images/venue/basket.jpg'
                 ],
                 'description' => 'Lapangan basket indoor dengan lantai parquette'
             ],
-            // Add more fields as needed
+            [
+                'id' => 3,
+                'name' => 'Lapangan Futsal Indoor',
+                'type' => 'Futsal',
+                'image' => '/images/venue/futsal.jpg',
+                'price' => 250000,
+                'equipment' => ['Bola Futsal', 'Gawang Standar', 'Jaring Pengaman'],
+                'available' => true,
+                'images' => [
+                    '/images/venue/futsal.jpg',
+                    '/images/venue/futsal.jpg',
+                    '/images/venue/futsal.jpg'
+                ],
+                'description' => 'Lapangan futsal indoor dengan rumput sintetis premium'
+            ],
+            [
+                'id' => 4,
+                'name' => 'Lapangan Sepak Bola A',
+                'type' => 'Sepak Bola',
+                'image' => '/images/venue/soccer.jpg',
+                'price' => 300000,
+                'equipment' => ['Bola', 'Rompi', 'Gawang Standar'],
+                'available' => true,
+                'images' => [
+                    '/images/venue/soccer.jpg',
+                    '/images/venue/soccer.jpg',
+                    '/images/venue/soccer.jpg'
+                ],
+                'description' => 'Lapangan rumput sintetis standar FIFA dengan ukuran penuh'
+            ],
         ]
     ];
 

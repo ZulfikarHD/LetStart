@@ -21,7 +21,7 @@ const featuredVenues = [
         location: 'Senayan, Jakarta Selatan',
         rating: 4.8,
         sport: 'Futsal',
-        image: '/images/venues/futsal-1.jpg',
+        image: '/images/venue/futsal.jpg',
         price: 'Rp 200.000/jam'
     },
     {
@@ -30,7 +30,7 @@ const featuredVenues = [
         location: 'Kelapa Gading, Jakarta Utara',
         rating: 4.7,
         sport: 'Badminton',
-        image: '/images/venues/badminton-1.jpg',
+        image: '/images/venue/badminton.jpg',
         price: 'Rp 150.000/jam'
     },
     {
@@ -39,7 +39,7 @@ const featuredVenues = [
         location: 'BSD City, Tangerang',
         rating: 4.9,
         sport: 'Basket',
-        image: '/images/venues/basket-1.jpg',
+        image: '/images/venue/basket.jpg',
         price: 'Rp 250.000/jam'
     }
 ];
