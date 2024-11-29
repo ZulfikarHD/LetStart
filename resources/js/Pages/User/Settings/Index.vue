@@ -3,7 +3,6 @@ import { ref, watch } from 'vue';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import { Tab } from '@headlessui/vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import ProfileSettings from '@/Components/Settings/ProfileSettings.vue';
 import SecuritySettings from '@/Components/Settings/SecuritySettings.vue';
 import PaymentSettings from '@/Components/Settings/PaymentSettings.vue';
 import NotificationSettings from '@/Components/Settings/NotificationSettings.vue';
