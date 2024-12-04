@@ -422,3 +422,111 @@
 | achieved_at | TIMESTAMP | Completion date |
 | created_at | TIMESTAMP | Creation date |
 
+## Field Management
+
+### field_images
+| Field | Type | Description |
+|-------|------|-------------|
+| id | UUID | Primary key |
+| field_id | UUID | Foreign key to fields |
+| image_url | VARCHAR(255) | Image URL |
+| is_primary | BOOLEAN | Primary image flag |
+| sort_order | INTEGER | Display order |
+| alt_text | VARCHAR(255) | Image alt text |
+| created_at | TIMESTAMP | Upload date |
+| updated_at | TIMESTAMP | Last update date |
+
+### field_availability
+| Field | Type | Description |
+|-------|------|-------------|
+| id | UUID | Primary key |
+| field_id | UUID | Foreign key to fields |
+| date | DATE | Availability date |
+| time_slot | TIME | Time slot |
+| is_available | BOOLEAN | Availability status |
+| is_peak_hour | BOOLEAN | Peak hour flag |
+| peak_hour_price | DECIMAL(12,2) | Peak hour pricing |
+| created_at | TIMESTAMP | Creation date |
+| updated_at | TIMESTAMP | Last update date |
+
+### field_maintenance
+| Field | Type | Description |
+|-------|------|-------------|
+| id | UUID | Primary key |
+| field_id | UUID | Foreign key to fields |
+| start_date | DATE | Maintenance start |
+| end_date | DATE | Maintenance end |
+| reason | TEXT | Maintenance reason |
+| status | ENUM | Scheduled/InProgress/Completed |
+| notes | TEXT | Additional notes |
+| created_at | TIMESTAMP | Creation date |
+| updated_at | TIMESTAMP | Last update date |
+
+### field_rules
+| Field | Type | Description |
+|-------|------|-------------|
+| id | UUID | Primary key |
+| field_id | UUID | Foreign key to fields |
+| title | VARCHAR(100) | Rule title |
+| description | TEXT | Rule description |
+| icon | VARCHAR(50) | Rule icon |
+| sort_order | INTEGER | Display order |
+| is_active | BOOLEAN | Active status |
+| created_at | TIMESTAMP | Creation date |
+| updated_at | TIMESTAMP | Last update date |
+
+### field_pricing_rules
+| Field | Type | Description |
+|-------|------|-------------|
+| id | UUID | Primary key |
+| field_id | UUID | Foreign key to fields |
+| name | VARCHAR(100) | Rule name |
+| type | ENUM | Weekend/Holiday/Special |
+| price_modifier | DECIMAL(5,2) | Price multiplier |
+| start_date | DATE | Valid from date |
+| end_date | DATE | Valid until date |
+| is_active | BOOLEAN | Active status |
+| created_at | TIMESTAMP | Creation date |
+| updated_at | TIMESTAMP | Last update date |
+
+### field_cancellation_policies
+| Field | Type | Description |
+|-------|------|-------------|
+| id | UUID | Primary key |
+| field_id | UUID | Foreign key to fields |
+| hours_before | INTEGER | Hours before booking |
+| refund_percentage | INTEGER | Refund percentage |
+| description | TEXT | Policy description |
+| created_at | TIMESTAMP | Creation date |
+| updated_at | TIMESTAMP | Last update date |
+
+### field_reviews
+| Field | Type | Description |
+|-------|------|-------------|
+| id | UUID | Primary key |
+| field_id | UUID | Foreign key to fields |
+| user_id | UUID | Foreign key to users |
+| booking_id | UUID | Foreign key to bookings |
+| rating | TINYINT | Rating (1-5) |
+| review | TEXT | Review content |
+| cleanliness_rating | TINYINT | Cleanliness (1-5) |
+| facility_rating | TINYINT | Facilities (1-5) |
+| service_rating | TINYINT | Service (1-5) |
+| images | JSON | Review images |
+| is_verified | BOOLEAN | Verified booking review |
+| status | ENUM | Published/Hidden/Reported |
+| created_at | TIMESTAMP | Review date |
+| updated_at | TIMESTAMP | Last update date |
+
+### field_time_slots
+| Field | Type | Description |
+|-------|------|-------------|
+| id | UUID | Primary key |
+| field_id | UUID | Foreign key to fields |
+| day_of_week | TINYINT | Day (1-7) |
+| start_time | TIME | Slot start time |
+| end_time | TIME | Slot end time |
+| is_available | BOOLEAN | Default availability |
+| base_price | DECIMAL(12,2) | Regular price |
+| created_at | TIMESTAMP | Creation date |
+| updated_at | TIMESTAMP | Last update date |
