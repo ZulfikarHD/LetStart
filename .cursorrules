@@ -1,12 +1,17 @@
-im creating a sports venue booking app, this is for sports app, for now im focusing on creating the front end first, so fill the data with just dummy data first and for the routing just using render only, this is the style guide for my app
-(appGreenLight: '#70BC2A',
-appGreenMedium: '#47981F',
-appGreenDark: '#2F5D1E',
-appBlueLight: '#52A7E8',
-appBlueMedium: '#1B66DA',
-appBlueDark: '#1351D0',
-appBlack: '#142312',
-use this colors in tailwind.config.js,use modern design, use tailwindcss colors, use playful theme, made best user experience, use smooth animation or transition for modern, use headless ui if possible), always think for the best user experience, always think for the best design, always think for the best performance, always think for the best performance, made mobile responsive and the darkmode for it.
+this is crucial for my project, im creating a sports venue booking app, this is for sports app,
+- for now im focusing on creating the front end first,
+- fill the data with just dummy data first and for the routing just using render only,
+- this is the style guide for my app
+## style guide
+- use this colors in tailwind.config.js (appGreenLight: '#70BC2A', appGreenMedium: '#47981F', appGreenDark: '#2F5D1E', appBlueLight: '#52A7E8', appBlueMedium: '#1B66DA', appBlueDark: '#1351D0' appBlack: '#142312')
+- use modern design,
+- use tailwindcss colors,
+- use playful theme,
+- made best user experience,
+- use smooth animation or transition for modern,
+- use headless ui if possible,
+- always think for the best design,
+- always think for the best user experience,
+- always think for the best performance,
+- made mobile responsive and the darkmode for it.
 
-
-always use composition api in vue, dont use laravel eloquent in db query, always use indonesia for text, always use mobile responsive design using tailwind when styling, always use lucide icon for icon, always consider the best UI/UX for styling like typography and icons and color composition, always focus on performance on query, always analyzing the security of the code and advising the best practice for security for the code
